@@ -11,12 +11,14 @@
       --accent-start:#6ec6ff; --accent-end:#ff8ac6; --text:#042033;
       --owner-gold:#f6c24a; --vip-purple:#9b6eff; --admin-white:#ffffff;
       --success:#2ecc71; --danger:#ff6b6b; --radius:12px; font-family:Inter,system-ui,Arial,Helvetica,sans-serif;
+      --max-w:980px;
     }
     [data-theme="dark"]{ --bg1:#071526; --bg2:#042033; --card:#071526; --muted:#9aa6b2; --text:#d6e6ee; --accent-start:#2b7fbf; --accent-end:#9b4fae; }
 
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;color:var(--text);background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
-    .app{max-width:1100px;margin:12px auto;padding:10px}
+    body{font-size:15px}
+    .app{max-width:var(--max-w);margin:10px auto;padding:8px}
     .card{background:var(--card);border-radius:16px;padding:12px;box-shadow:0 12px 40px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:10px}
     .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
     .leftRow{display:flex;gap:12px;align-items:center}
@@ -26,22 +28,21 @@
     .sub{color:var(--muted);font-size:13px}
 
     .layout{display:flex;gap:12px}
-    .main{flex:2;display:flex;flex-direction:column;min-width:320px}
-    .side{width:320px;min-width:240px;display:flex;flex-direction:column;gap:10px}
+    .main{flex:2;display:flex;flex-direction:column;min-width:280px}
+    .side{width:320px;min-width:220px;display:flex;flex-direction:column;gap:10px}
 
     .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    .pill{padding:8px 12px;border-radius:10px;border:1px solid #eee;background:#fff;cursor:pointer}
-
-    .messages{height:420px;overflow:auto;padding:12px;border-radius:12px;border:1px solid #eef7fb;background:linear-gradient(180deg,#fbfeff,#f7fcff)}
+    .pill{padding:8px 12px;border-radius:999px;border:1px solid #eee;background:#fff;cursor:pointer}
+    .messages{height:calc(60vh);overflow:auto;padding:12px;border-radius:12px;border:1px solid #eef7fb;background:linear-gradient(180deg,#fbfeff,#f7fcff)}
     .msgWrap{margin-bottom:12px}
     .meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
     .bubble{padding:10px 12px;border-radius:12px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.03);max-width:78%;word-break:break-word}
     .bubble.me{background:linear-gradient(90deg,var(--accent-start),var(--accent-end));color:#fff;margin-left:auto}
-    .sendRow{display:flex;gap:8px;margin-top:10px}
+    .sendRow{display:flex;gap:8px;margin-top:10px;align-items:center}
     input[type="text"], textarea, select{flex:1;padding:10px;border-radius:10px;border:1px solid #e6f3fb;background:transparent;color:var(--text)}
     button.primary{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent-start),var(--accent-end));color:#022;cursor:pointer;font-weight:700}
 
-    .usersBox{padding:8px;border-radius:10px;border:1px solid #f0f6fb;background:#fff;overflow:auto;max-height:320px}
+    .usersBox{padding:8px;border-radius:10px;border:1px solid #f0f6fb;background:#fff;overflow:auto;max-height:260px}
     .userRow{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px}
     .userLeft{display:flex;align-items:center;gap:10px}
     .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#eafcff,#ffeaf5);display:flex;align-items:center;justify-content:center;font-weight:900;color:#033}
@@ -55,42 +56,29 @@
 
     .menuPanel{position:fixed;left:12px;top:86px;width:320px;background:var(--card);border-radius:12px;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.12);display:none;z-index:99}
     .pmOverlay{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:60}
-    .pmCard{width:92%;max-width:980px;background:var(--card);border-radius:10px;padding:12px;display:flex;gap:12px}
+    .pmCard{width:92%;max-width:980px;background:var(--card);border-radius:10px;padding:12px;display:flex;gap:12px;flex-wrap:wrap}
     .pmLeft{flex:1;display:flex;flex-direction:column}
     .pmRight{width:320px;border-left:1px solid #eee;padding-left:10px}
-    .pmMessages{flex:1;overflow:auto;padding:8px;border-radius:8px;background:#fbfdff;min-height:180px}
+    .pmMessages{flex:1;overflow:auto;padding:8px;border-radius:8px;background:#fbfdff;min-height:160px}
     .closeX{background:var(--danger);color:#fff;border-radius:8px;padding:6px 8px;border:none;cursor:pointer}
 
     .bottomNav{display:flex;justify-content:space-around;align-items:center;padding:8px;background:#fff;border-radius:12px;margin-top:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
     .navItem{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);cursor:pointer}
-
     .rulesModal{display:none;position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:120}
     .rulesContent{background:var(--card);padding:16px;border-radius:10px;max-width:720px;margin:40px auto;color:var(--text)}
-
     .videoSmall{width:180px;height:120px;border-radius:8px;position:absolute;right:18px;bottom:18px;z-index:80;border:2px solid #fff}
     video{width:100%;height:auto;border-radius:8px;background:#000}
-
     .delBtn{background:#fff;border:1px solid #f3c2c2;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px}
+
+    .smallCenter{font-size:13px;text-align:center;color:var(--muted)}
 
     @media (max-width:980px){
       .layout{flex-direction:column}
       .side{width:100%}
-      .messages{height:320px}
+      .messages{height:45vh}
       .menuPanel{left:8px;top:70px;width:90%}
-    }
-
-    /* Mobile specific tweaks to ensure element sizes fit small screens */
-    @media (max-width:480px){
-      .logo{width:48px;height:48px;font-size:18px}
-      .menuBtn{width:40px;height:40px}
-      .card{padding:10px;border-radius:12px}
-      .messages{height:56vh;padding:10px}
-      .bubble{max-width:86%}
-      .sendRow{position:fixed;left:12px;right:12px;bottom:12px;background:transparent}
-      .sendRow input{padding:12px;border-radius:10px}
-      .sendRow button.primary{width:100px;padding:12px}
-      .side{display:none} /* hide side panel on very small screens to save space; use bottom nav */
-      .bottomNav{position:fixed;left:12px;right:12px;bottom:12px}
+      .pmRight{width:100%;border-left:none;padding-left:0;border-top:1px solid #eee;margin-top:8px}
+      .pmCard{flex-direction:column}
     }
   </style>
 </head>
@@ -99,11 +87,11 @@
     <div class="card" id="mainCard">
       <div class="top">
         <div class="leftRow">
-          <div class="menuBtn" id="menuToggle" title="Menu">☰</div>
+          <div class="menuBtn" id="menuToggle">☰</div>
           <div class="logo" id="logoText">MH</div>
           <div>
             <h1 id="siteTitle">FunTimeChat</h1>
-            <div class="sub">Public · Rooms · Private PMs (B rules)</div>
+            <div class="sub">Public · Rooms · Private PMs · Calls</div>
           </div>
         </div>
         <div id="userArea"></div>
@@ -120,16 +108,16 @@
             <div class="small">Current: <strong id="currentRoomLabel">room1 (Public)</strong></div>
           </div>
 
-          <div id="messages" class="messages" aria-live="polite"></div>
+          <div id="messages" class="messages"></div>
 
-          <div class="sendRow" style="margin-top:8px">
-            <input id="msgInput" type="text" placeholder="Type message and press Send..." autocomplete="off" />
+          <div class="sendRow">
+            <input id="msgInput" type="text" placeholder="Type message and press Send..." />
             <button id="sendBtn" class="primary">Send</button>
           </div>
           <div class="small" style="margin-top:8px">Messages saved under <code id="pathInfo">/chats/room1/messages</code></div>
         </div>
 
-        <div class="side" id="sidePanel">
+        <div class="side">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div>
               <div class="sectionTitle">Rooms</div>
@@ -176,7 +164,7 @@
   </div>
 
   <!-- Menu panel -->
-  <div id="menuPanel" class="menuPanel" role="dialog" aria-hidden="true">
+  <div id="menuPanel" class="menuPanel">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
       <div class="avatar" id="menuAvatar">MH</div>
       <div>
@@ -202,11 +190,29 @@
     <div class="menuRow" id="mShare">🔗 Share</div>
     <div class="menuRow" id="mSwitch">🔁 Switch Accounts</div>
     <div style="height:8px"></div>
+
+    <div style="margin-top:8px">
+      <div style="font-weight:700">Quick admin (owner only)</div>
+      <div class="small">Set role for UID:</div>
+      <input id="adminUidInput" placeholder="uid to set role" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee;margin-top:6px" />
+      <select id="roleSelect" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee;margin-top:6px">
+        <option value="owner">owner</option>
+        <option value="admin">admin</option>
+        <option value="vip">vip</option>
+        <option value="">clear</option>
+      </select>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="pill" id="setRoleBtn">Set role</button>
+        <button class="pill" id="revokeRoleBtn" style="background:#fff;border:1px solid #eee">Remove role</button>
+      </div>
+    </div>
+
+    <div style="height:8px"></div>
     <div class="small" style="color:var(--muted)">Accept site rules to use — required for chat (Rules)</div>
   </div>
 
   <!-- PM popup -->
-  <div id="pmOverlay" class="pmOverlay" role="dialog" aria-hidden="true">
+  <div id="pmOverlay" class="pmOverlay">
     <div class="pmCard">
       <div class="pmLeft">
         <div style="display:flex;align-items:center;justify-content:space-between">
@@ -258,7 +264,7 @@
   </div>
 
   <!-- Rules Modal -->
-  <div id="rulesModal" class="rulesModal" role="dialog" aria-hidden="true">
+  <div id="rulesModal" class="rulesModal">
     <div class="rulesContent">
       <h3>FunTime Chat — Community Guidelines (Please accept)</h3>
       <p>We want FunTime Chat to be friendly and fun. Soft rules (B): casual talk allowed but respectful.</p>
@@ -281,10 +287,16 @@
   <!-- Firebase SDK v9 modular -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInAnonymously } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
-    import { getDatabase, ref, set, push, onChildAdded, onValue, update, onDisconnect, serverTimestamp, get, child, remove } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js';
+    import {
+      getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged,
+      signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification
+    } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
+    import {
+      getDatabase, ref, set, push, onChildAdded, onValue, update, onDisconnect,
+      serverTimestamp, get, child, remove
+    } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js';
 
-    // ---------- FIREBASE CONFIG (YOUR project) ----------
+    // ---------- FIREBASE CONFIG (your project - you already set this earlier) ----------
     const firebaseConfig = {
       apiKey: "AIzaSyB__tJ3sv3cB2N3vKHFCv8SYngJENQxwhY",
       authDomain: "funtimechat69-39947.firebaseapp.com",
@@ -309,8 +321,6 @@
     const friendsListEl = document.getElementById('friendsList');
     const friendReqsEl = document.getElementById('friendReqs');
     const pmOverlay = document.getElementById('pmOverlay');
-    const pmTitle = document.getElementById('pmTitle');
-    const pmSub = document.getElementById('pmSub');
     const pmMessages = document.getElementById('pmMessages');
     const pmInput = document.getElementById('pmInput');
     const pmSend = document.getElementById('pmSend');
@@ -339,10 +349,12 @@
     const pathInfo = document.getElementById('pathInfo');
     const avatarFile = document.getElementById('avatarFile');
     const themeToggle = document.getElementById('themeToggle');
-    const localVideo = document.getElementById('localVideo');
-    const remoteVideo = document.getElementById('remoteVideo');
+    const adminUidInput = document.getElementById('adminUidInput');
+    const roleSelect = document.getElementById('roleSelect');
+    const setRoleBtn = document.getElementById('setRoleBtn');
+    const revokeRoleBtn = document.getElementById('revokeRoleBtn');
 
-    // small helpers
+    // helpers
     function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
     function show(el){ el.style.display = 'flex' }
     function hide(el){ el.style.display = 'none' }
@@ -354,29 +366,60 @@
     let currentPmOtherUid = null;
     let currentPmChatId = null;
 
-    // Request Notification permission (for desktop/mobile browsers)
-    if("Notification" in window && Notification.permission !== "granted"){
-      Notification.requestPermission().catch(()=>{});
-    }
-
-    // AUTH UI
+    // Authentication UI rendering + methods (Google, Email, Anonymous)
     function renderUserUI(user){
       if(!user){
-        userArea.innerHTML = `<button class="pill" id="loginBtn">Sign in with Google</button> <button class="pill" id="guestBtn">Guest</button>`;
+        userArea.innerHTML = `<div style="display:flex;gap:8px;align-items:center">
+          <button class="pill" id="loginBtn">Sign in with Google</button>
+          <button class="pill" id="guestBtn">Guest</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <input id="emailIn" placeholder="email" style="padding:6px;border-radius:6px;border:1px solid #eee" />
+            <input id="passIn" placeholder="password" type="password" style="padding:6px;border-radius:6px;border:1px solid #eee" />
+            <button class="pill" id="emailSignup">Sign up</button>
+            <button class="pill" id="emailLogin">Login</button>
+          </div>`;
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider).catch(e=>alert(e.message));
         document.getElementById('guestBtn').onclick = () => signInAnonymously(auth).catch(e=>alert(e.message));
-        menuName.innerText = 'Guest'; menuEmail.innerText=''; menuAvatar.innerText='MH'; document.getElementById('profileInfo').innerText='Name: not signed (username cannot be changed)';
+        document.getElementById('emailSignup').onclick = async ()=>{
+          const em = document.getElementById('emailIn').value.trim();
+          const pw = document.getElementById('passIn').value;
+          if(!em || !pw) return alert('Enter email & password');
+          try{
+            const cred = await createUserWithEmailAndPassword(auth, em, pw);
+            await sendEmailVerification(cred.user);
+            alert('Account created — check email to verify.');
+          }catch(e){ alert(e.message); }
+        };
+        document.getElementById('emailLogin').onclick = async ()=>{
+          const em = document.getElementById('emailIn').value.trim();
+          const pw = document.getElementById('passIn').value;
+          if(!em || !pw) return alert('Enter email & password');
+          try{
+            await signInWithEmailAndPassword(auth, em, pw);
+          }catch(e){ alert(e.message); }
+        };
+
+        menuName.innerText = 'Guest'; menuEmail.innerText=''; menuAvatar.innerText='MH';
+        document.getElementById('profileInfo').innerText='Name: not signed (username cannot be changed)';
       } else {
-        userArea.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><div style="text-align:right"><div style="font-weight:800">${esc(user.displayName||user.email)}</div><div class="small">${esc(user.email||'')}</div></div><button class="pill" id="logoutBtn">Logout</button></div>`;
+        const display = esc(user.displayName||user.email||'User');
+        userArea.innerHTML = `<div style="display:flex;gap:8px;align-items:center">
+          <div style="text-align:right">
+            <div style="font-weight:800">${display}</div>
+            <div class="small">${esc(user.email||'')}</div>
+          </div>
+          <button class="pill" id="logoutBtn">Logout</button>
+        </div>`;
         document.getElementById('logoutBtn').onclick = () => signOut(auth);
         menuName.innerText = user.displayName || user.email || 'User';
         menuEmail.innerText = user.email || '';
-        try{ menuAvatar.innerText = (user.displayName||'MH').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase(); }catch(e){}
-        document.getElementById('profileInfo').innerText = `Name: ${user.displayName || ''} (username cannot be changed)`;
+        menuAvatar.innerText = (user.displayName||'MH').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+        document.getElementById('profileInfo').innerText = `Name: ${user.displayName || user.email || ''} (username cannot be changed)`;
       }
     }
 
-    // save user + presence
+    // save user + presence + auto-owner
     async function saveUser(user){
       if(!user) return;
       const uRef = ref(db, 'users/' + user.uid);
@@ -384,6 +427,8 @@
       const data = { name:user.displayName||null, email:user.email||null, photoURL:user.photoURL||null, createdAt:serverTimestamp() };
       if(existing.exists() && existing.val().avatarData) data.avatarData = existing.val().avatarData;
       await set(uRef, data);
+
+      // presence
       const conRef = ref(db, '.info/connected');
       const statusRef = ref(db, 'status/' + user.uid);
       onValue(conRef, snap => {
@@ -394,56 +439,58 @@
           set(statusRef, { state:'offline', last_changed:serverTimestamp() });
         }
       });
+
+      // auto-set owner if none exists
+      const rolesRoot = await get(ref(db,'roles'));
+      if(!rolesRoot.exists()){
+        // no roles at all -> set this user as owner
+        await set(ref(db, `roles/${user.uid}`), 'owner');
+        console.log('No roles existed, auto-set current user as owner:', user.uid);
+      } else {
+        // if there's no owner among roles, set first signed-in user as owner
+        const roles = rolesRoot.val();
+        const hasOwner = Object.values(roles).some(r=>r==='owner');
+        if(!hasOwner){
+          await set(ref(db, `roles/${user.uid}`), 'owner');
+          console.log('No owner found in roles, auto-set current user as owner:', user.uid);
+        }
+      }
     }
 
     // auth listener
     onAuthStateChanged(auth, async user=>{
       currentUser = user;
       renderUserUI(user);
-      if(user){ await saveUser(user); loadRooms(); loadUsers(); loadFriendRequests(); loadFriends(); } else { loadRooms(); loadUsers(); }
+      if(user){
+        await saveUser(user);
+        loadRooms(); loadUsers(); loadFriendRequests(); loadFriends();
+      } else {
+        loadRooms(); loadUsers();
+      }
     });
 
-    // RULES modal
-    btnRules.onclick = ()=> { rulesModal.style.display='flex'; rulesModal.setAttribute('aria-hidden','false'); };
-    closeRulesBtn.onclick = ()=> { rulesModal.style.display='none'; rulesModal.setAttribute('aria-hidden','true'); };
-    acceptRules.onclick = ()=> { acceptedRules = true; rulesModal.style.display='none'; rulesModal.setAttribute('aria-hidden','true'); alert('Thanks — you can now chat.'); };
+    // rules modal
+    btnRules.onclick = ()=> rulesModal.style.display = 'flex';
+    closeRulesBtn.onclick = ()=> rulesModal.style.display = 'none';
+    acceptRules.onclick = ()=> { acceptedRules = true; rulesModal.style.display='none'; alert('Thanks — you can now chat.'); };
 
-    // Menu toggle & theme
-    menuToggle.onclick = ()=> { menuPanel.style.display = menuPanel.style.display === 'block' ? 'none' : 'block'; menuPanel.setAttribute('aria-hidden', menuPanel.style.display === 'none'); };
+    // menu & theme
+    menuToggle.onclick = ()=> menuPanel.style.display = menuPanel.style.display === 'block' ? 'none' : 'block';
     themeToggle.onclick = ()=> { const cur = document.documentElement.getAttribute('data-theme'); if(cur==='dark') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme','dark'); };
     document.body.addEventListener('click', (e)=>{ if(!menuPanel.contains(e.target) && e.target !== menuToggle) menuPanel.style.display = 'none'; });
 
-    // Avatar upload stored as dataURL
+    // avatar upload stored as dataURL
     avatarFile.addEventListener('change', async (e)=>{
       if(!currentUser) return alert('Sign in first');
       const file = e.target.files[0]; if(!file) return;
       const reader = new FileReader();
-      reader.onload = async ()=> {
-        const dataUrl = reader.result;
-        await set(ref(db, `users/${currentUser.uid}/avatarData`), dataUrl);
-        alert('Profile photo uploaded.');
-        // update menu and small avatar preview
-        try{
-          menuAvatar.innerHTML = '';
-          const im = document.createElement('img'); im.src = dataUrl; im.style.width='44px'; im.style.height='44px'; im.style.borderRadius='50%';
-          menuAvatar.appendChild(im);
-        }catch(e){}
-      };
+      reader.onload = async ()=> { const dataUrl = reader.result; await set(ref(db, `users/${currentUser.uid}/avatarData`), dataUrl); alert('Profile photo uploaded.'); loadUsers(); };
       reader.readAsDataURL(file);
     });
 
-    // Notifications helper
-    function notify(title, body){
-      try{
-        if("Notification" in window && Notification.permission === "granted"){
-          new Notification(title, { body });
-        }
-      }catch(e){}
-    }
-
-    // ROOM & PUBLIC messages
+    // ROOM messaging
     function setRoom(roomId, metaLabel){
-      if(!acceptedRules){ rulesModal.style.display='flex'; rulesModal.setAttribute('aria-hidden','false'); return; }
+      if(!acceptedRules){ rulesModal.style.display='flex'; return; }
       currentRoom = roomId; currentRoomLabel.innerText = metaLabel || roomId;
       pathInfo.innerText = currentRoom.startsWith('room') ? `/chats/${currentRoom}/messages` : `/rooms/${currentRoom}/messages`;
       messagesEl.innerHTML = '';
@@ -451,57 +498,83 @@
       onChildAdded(node, snap=> {
         const m = snap.val(); if(!m) return;
         const key = snap.key;
-        if(currentUser && m.uid){
-          get(ref(db, `blocks/${currentUser.uid}/${m.uid}`)).then(bsnap=>{ if(bsnap.exists() && bsnap.val()===true) return; appendMessageToUI(m,key); });
-        } else appendMessageToUI(m,key);
+        if(currentUser && m.uid){ get(ref(db, `blocks/${currentUser.uid}/${m.uid}`)).then(bsnap=>{ if(bsnap.exists() && bsnap.val()===true) return; appendMessageToUI(m,key); }); }
+        else appendMessageToUI(m,key);
       });
     }
 
-    function appendMessageToUI(m,key){
+    async function appendMessageToUI(m,key){
       const wrap = document.createElement('div'); wrap.className='msgWrap'; wrap.dataset.key = key;
-      const meta = document.createElement('div'); meta.className='meta'; meta.innerText = `${esc(m.name||'Anon')} • ${new Date(m.ts||Date.now()).toLocaleTimeString()}`;
+      const meta = document.createElement('div'); meta.className='meta'; meta.innerText = `${esc(m.name||'Anon')} • ${new Date((m.ts && m.ts.toString && m.ts.toString().length>10)?m.ts:Date.now()).toLocaleTimeString()}`;
       // role badge
-      get(ref(db, `roles/${m.uid}`)).then(rs=>{ if(rs.exists()){ const role=rs.val(); const s=document.createElement('span'); s.style.marginLeft='8px'; if(role==='owner'){s.className='badge owner';s.innerText='O'} else if(role==='vip'){s.className='badge vip';s.innerText='V'} else {s.className='badge admin';s.innerText='A'} meta.appendChild(s);} });
+      const roleSnap = await get(ref(db, `roles/${m.uid}`));
+      if(roleSnap.exists()){
+        const role = roleSnap.val();
+        const s = document.createElement('span');
+        s.style.marginLeft='8px';
+        if(role==='owner'){s.className='badge owner';s.innerText='O'}
+        else if(role==='vip'){s.className='badge vip';s.innerText='V'}
+        else if(role==='admin'){s.className='badge admin';s.innerText='A'}
+        meta.appendChild(s);
+      }
       // online dot
-      get(ref(db, `status/${m.uid}`)).then(ss=>{ if(ss.exists() && ss.val().state==='online'){ const dot=document.createElement('span'); dot.className='onlineDot'; meta.appendChild(dot); } });
+      const statusSnap = await get(ref(db, `status/${m.uid}`));
+      if(statusSnap.exists() && statusSnap.val().state==='online'){ const dot=document.createElement('span'); dot.className='onlineDot'; meta.appendChild(dot); }
+
       const bubble = document.createElement('div'); bubble.className='bubble' + ((currentUser && m.uid===currentUser.uid)?' me':''); bubble.innerText = m.text || '';
       if(currentUser && m.uid===currentUser.uid){
-        const dBtn=document.createElement('button'); dBtn.className='delBtn'; dBtn.innerText='Delete';
-        dBtn.onclick = async ()=>{ if(!confirm('Delete your message?')) return; await remove(ref(db, `${currentRoom.startsWith('room')?`chats/${currentRoom}/messages/${key}`:`rooms/${currentRoom}/messages/${key}`}`)); wrap.remove(); };
+        const dBtn=document.createElement('button'); dBtn.className='delBtn'; dBtn.innerText='Delete'; dBtn.onclick = async ()=>{ if(!confirm('Delete your message?')) return; await remove(ref(db, `${currentRoom.startsWith('room')?`chats/${currentRoom}/messages/${key}`:`rooms/${currentRoom}/messages/${key}`}`)); wrap.remove(); };
         meta.appendChild(dBtn);
       }
-      wrap.appendChild(meta); wrap.appendChild(bubble); messagesEl.appendChild(wrap); messagesEl.scrollTop = messagesEl.scrollHeight;
-      notifySound.play().catch(()=>{});
-      // browser notification if not visible
-      if(document.hidden) notify('New message', (m.name||'Anon') + ': ' + (m.text||''));
+      wrap.appendChild(meta); wrap.appendChild(bubble); messagesEl.appendChild(wrap); messagesEl.scrollTop = messagesEl.scrollHeight; try{ notifySound.play().catch(()=>{}); }catch(e){}
     }
 
     // send message
-    sendBtn.onclick = async ()=>{ const txt=msgInput.value.trim(); if(!txt) return; if(!currentUser) return alert('Sign in first'); const path = currentRoom.startsWith('room') ? `chats/${currentRoom}/messages` : `rooms/${currentRoom}/messages`; const p = push(ref(db, path)); await set(p, { uid: currentUser.uid, name: currentUser.displayName || currentUser.email || 'Guest', text: txt, ts: serverTimestamp() }); msgInput.value=''; };
+    sendBtn.onclick = async ()=>{ const txt=msgInput.value.trim(); if(!txt) return; if(!currentUser) return alert('Sign in first'); const path = currentRoom.startsWith('room') ? `chats/${currentRoom}/messages` : `rooms/${currentRoom}/messages`; const p = push(ref(db, path)); await set(p, { uid: currentUser.uid, name: currentUser.displayName || currentUser.email || 'User', text: txt, ts: serverTimestamp() }); msgInput.value=''; };
     msgInput.addEventListener('keydown', e=>{ if(e.key==='Enter') sendBtn.click(); });
 
-    // ensure welcome
+    // ensure welcome message + init
     (async function ensureWelcome(){ const s = await get(ref(db, `chats/room1/messages`)); if(!s.exists()){ const p = push(ref(db, `chats/room1/messages`)); await set(p, { uid:'system', name:'System', text:'Welcome to FunTimeChat — room1 public', ts: serverTimestamp() }); } setRoom('room1','room1 (Public)'); })();
 
-    // rooms
+    // rooms CRUD
     createRoomBtn.onclick = ()=> createRoom(newRoomName.value, newRoomType.value);
     async function createRoom(name,type){ if(!currentUser) return alert('Sign in first'); if(!name||!name.trim()) return alert('Enter room name'); const id = name.trim().toLowerCase().replace(/\s+/g,'_') + '_' + Date.now().toString(36); await set(ref(db, `rooms/${id}/meta`), { name:name.trim(), owner:currentUser.uid, type, createdAt:serverTimestamp() }); await set(ref(db, `rooms/${id}/members/${currentUser.uid}`), true); newRoomName.value=''; loadRooms(); }
     async function loadRooms(){ const snap = await get(ref(db,'rooms')); const obj = snap.val()||{}; roomsList.innerHTML=''; Object.keys(obj).forEach(id=>{ const m=obj[id].meta||{}; const row=document.createElement('div'); row.className='userRow'; row.innerHTML=`<div style="display:flex;flex-direction:column"><div style="font-weight:700">${esc(m.name||id)}</div><div class="small">${esc(m.type||'public')}</div></div><div><button class="pill joinBtn">Join</button></div>`; roomsList.appendChild(row); row.querySelector('.joinBtn').onclick = async ()=>{ if(m.type==='invite'){ const allowed = await get(child(ref(db), `rooms/${id}/members/${currentUser?currentUser.uid:'nogu'}`)); if(!allowed.exists()) return alert('Invite-only room. Ask owner to add you.'); } setRoom(id, m.name||id); }; }); }
 
     // users/friends/block
     async function loadUsers(){ const s = await get(ref(db,'users')); const u = s.val()||{}; renderUsersList(u); }
-    function renderUsersList(usersObj){ allUsersEl.innerHTML=''; Object.keys(usersObj).forEach(uid=>{ const u=usersObj[uid]; const row=document.createElement('div'); row.className='userRow'; const left=document.createElement('div'); left.className='userLeft'; const av=document.createElement('div'); av.className='avatar'; get(ref(db, `users/${uid}/avatarData`)).then(aSnap=>{ if(aSnap.exists()){ const img=document.createElement('img'); img.src=aSnap.val(); img.style.width='44px'; img.style.height='44px'; img.style.borderRadius='50%'; av.innerHTML=''; av.appendChild(img); } else av.innerText=(u.name||'U').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase(); }); const info=document.createElement('div'); info.style.display='flex'; info.style.flexDirection='column'; info.innerHTML=`<div style="font-weight:700">${esc(u.name||'Anon')}</div><div class="small">${esc(u.email||'')}</div>`; left.appendChild(av); left.appendChild(info); const right=document.createElement('div'); const pmBtn=document.createElement('button'); pmBtn.className='pill'; pmBtn.innerText='PM'; pmBtn.onclick=()=> openPmWith(uid,u); const addBtn=document.createElement('button'); addBtn.className='pill'; addBtn.innerText='Add'; addBtn.onclick=async ()=>{ if(!currentUser) return alert('Sign in first'); await set(ref(db, `friendRequests/${uid}/${currentUser.uid}`), { from: currentUser.uid, ts: serverTimestamp() }); alert('Friend request sent'); }; const blockBtn=document.createElement('button'); blockBtn.className='pill'; blockBtn.innerText='Block'; blockBtn.onclick=async ()=>{ if(!currentUser) return alert('Sign in first'); await set(ref(db, `blocks/${currentUser.uid}/${uid}`), true); alert('Blocked'); }; const badgeHolder=document.createElement('span'); get(ref(db, `roles/${uid}`)).then(rs=>{ if(rs.exists()){ const role=rs.val(); const b=document.createElement('span'); b.className='badge ' + (role==='owner'?'owner':role==='vip'?'vip':'admin'); b.innerText = role==='owner'?'O':role==='vip'?'V':'A'; badgeHolder.appendChild(b); } }); get(ref(db, `status/${uid}`)).then(ss=>{ if(ss.exists() && ss.val().state==='online'){ const dot=document.createElement('span'); dot.className='onlineDot'; badgeHolder.appendChild(dot); } }); right.appendChild(pmBtn); right.appendChild(addBtn); right.appendChild(blockBtn); right.appendChild(badgeHolder); row.appendChild(left); row.appendChild(right); allUsersEl.appendChild(row); }); }
+    function renderUsersList(usersObj){ allUsersEl.innerHTML=''; Object.keys(usersObj).forEach(async uid=>{
+      const u=usersObj[uid]; const row=document.createElement('div'); row.className='userRow';
+      const left=document.createElement('div'); left.className='userLeft';
+      const av=document.createElement('div'); av.className='avatar'; av.innerText=(u.name||'U').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+      const aSnap = await get(ref(db, `users/${uid}/avatarData`));
+      if(aSnap.exists()){ const img=document.createElement('img'); img.src=aSnap.val(); img.style.width='44px'; img.style.height='44px'; img.style.borderRadius='50%'; av.innerHTML=''; av.appendChild(img); }
+      const info=document.createElement('div'); info.style.display='flex'; info.style.flexDirection='column'; info.innerHTML=`<div style="font-weight:700">${esc(u.name||'Anon')}</div><div class="small">${esc(u.email||'')}</div>`;
+      left.appendChild(av); left.appendChild(info);
+      const right=document.createElement('div');
+      const pmBtn=document.createElement('button'); pmBtn.className='pill'; pmBtn.innerText='PM'; pmBtn.onclick=()=> openPmWith(uid,u);
+      const addBtn=document.createElement('button'); addBtn.className='pill'; addBtn.innerText='Add'; addBtn.onclick=async ()=>{ if(!currentUser) return alert('Sign in first'); await set(ref(db, `friendRequests/${uid}/${currentUser.uid}`), { from: currentUser.uid, ts: serverTimestamp() }); alert('Friend request sent'); };
+      const blockBtn=document.createElement('button'); blockBtn.className='pill'; blockBtn.innerText='Block'; blockBtn.onclick=async ()=>{ if(!currentUser) return alert('Sign in first'); await set(ref(db, `blocks/${currentUser.uid}/${uid}`), true); alert('Blocked'); };
+      const badgeHolder=document.createElement('span');
+      const rSnap = await get(ref(db, `roles/${uid}`));
+      if(rSnap.exists()){ const role=rSnap.val(); const b=document.createElement('span'); b.className='badge ' + (role==='owner'?'owner':role==='vip'?'vip':'admin'); b.innerText = role==='owner'?'O':role==='vip'?'V':'A'; badgeHolder.appendChild(b); }
+      const sSnap = await get(ref(db, `status/${uid}`));
+      if(sSnap.exists() && sSnap.val().state==='online'){ const dot=document.createElement('span'); dot.className='onlineDot'; badgeHolder.appendChild(dot); }
+      right.appendChild(pmBtn); right.appendChild(addBtn); right.appendChild(blockBtn); right.appendChild(badgeHolder);
+      row.appendChild(left); row.appendChild(right); allUsersEl.appendChild(row);
+    }); }
 
     // friend requests
     async function loadFriendRequests(){ if(!currentUser) return; const snap = await get(ref(db, `friendRequests/${currentUser.uid}`)); const obj = snap.val()||{}; friendReqsEl.innerHTML=''; Object.keys(obj).forEach(fromUid=>{ const el=document.createElement('div'); el.className='userRow'; el.innerHTML=`<div style="display:flex;flex-direction:column"><div style="font-weight:700">${esc(obj[fromUid].from)}</div><div class="small">Request</div></div>`; const accept=document.createElement('button'); accept.className='pill'; accept.innerText='Accept'; accept.onclick=async ()=>{ await set(ref(db, `friends/${currentUser.uid}/${fromUid}`), true); await set(ref(db, `friends/${fromUid}/${currentUser.uid}`), true); await remove(ref(db, `friendRequests/${currentUser.uid}/${fromUid}`)); loadFriendRequests(); loadFriends(); }; const decline=document.createElement('button'); decline.className='pill'; decline.innerText='Decline'; decline.onclick=async ()=>{ await remove(ref(db, `friendRequests/${currentUser.uid}/${fromUid}`)); loadFriendRequests(); }; el.appendChild(accept); el.appendChild(decline); friendReqsEl.appendChild(el); }); }
 
-    // friends list
-    async function loadFriends(){ if(!currentUser) return; const snap = await get(ref(db, `friends/${currentUser.uid}`)); const obj = snap.val()||{}; friendsListEl.innerHTML=''; Object.keys(obj).forEach(uid=>{ const el=document.createElement('div'); el.className='userRow'; el.innerHTML=`<div style="font-weight:700">${esc(uid)}</div><div><button class="pill">PM</button></div>`; el.querySelector('button').onclick = async ()=>{ const uSnap = await get(ref(db, `users/${uid}`)); openPmWith(uid, uSnap.val()||{}); }; friendsListEl.appendChild(el); }); }
+    // friends
+    async function loadFriends(){ if(!currentUser) return; const snap = await get(ref(db, `friends/${currentUser.uid}`)); const obj = snap.val()||{}; friendsListEl.innerHTML=''; Object.keys(obj||{}).forEach(uid=>{ const el=document.createElement('div'); el.className='userRow'; el.innerHTML=`<div style="font-weight:700">${esc(uid)}</div><div><button class="pill">PM</button></div>`; el.querySelector('button').onclick = async ()=>{ const uSnap = await get(ref(db, `users/${uid}`)); openPmWith(uid, uSnap.val()||{}); }; friendsListEl.appendChild(el); }); }
 
     // PM / private chat
     function openPmWith(uid,userObj){
       if(!currentUser) return alert('Sign in first');
-      get(ref(db, `friends/${currentUser.uid}/${uid}`)).then(async snap=>{
+      (async ()=>{
+        const snap = await get(ref(db, `friends/${currentUser.uid}/${uid}`));
         if(!snap.exists()){
           if(!confirm('You are not friends. Send friend request?')) return;
           await set(ref(db, `friendRequests/${uid}/${currentUser.uid}`), { from: currentUser.uid, ts: serverTimestamp() });
@@ -511,11 +584,11 @@
         const ids=[currentUser.uid, uid].sort();
         currentPmChatId = `pm_${ids[0]}_${ids[1]}`;
         pmOverlay.style.display='flex';
-        pmOverlay.setAttribute('aria-hidden','false');
-        pmTitle.innerText = `Chat with ${userObj.name||uid}`;
+        document.getElementById('pmTitle').innerText = `Chat with ${userObj.name||uid}`;
         pmName.innerText = userObj.name||uid;
         pmEmail.innerText = userObj.email||'';
-        get(ref(db, `users/${uid}/avatarData`)).then(aSnap=>{ if(aSnap.exists()){ pmAvatar.innerHTML=''; const im=document.createElement('img'); im.src=aSnap.val(); im.style.width='44px'; im.style.height='44px'; im.style.borderRadius='50%'; pmAvatar.appendChild(im);} else pmAvatar.innerText=(userObj.name||'U').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase(); });
+        const aSnap = await get(ref(db, `users/${uid}/avatarData`));
+        if(aSnap.exists()){ pmAvatar.innerHTML=''; const im=document.createElement('img'); im.src=aSnap.val(); im.style.width='44px'; im.style.height='44px'; im.style.borderRadius='50%'; pmAvatar.appendChild(im);} else pmAvatar.innerText=(userObj.name||'U').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
         pmMessages.innerHTML='';
         const node = ref(db, `private/${currentPmChatId}/messages`);
         onChildAdded(node, snap=>{
@@ -526,18 +599,15 @@
           if(currentUser && m.uid===currentUser.uid){ const del=document.createElement('button'); del.className='delBtn'; del.innerText='Delete'; del.onclick=async ()=>{ if(!confirm('Delete your message?')) return; await remove(ref(db, `private/${currentPmChatId}/messages/${snap.key}`)); div.remove(); }; who.appendChild(del); }
           div.appendChild(who); div.appendChild(b); pmMessages.appendChild(div); pmMessages.scrollTop = pmMessages.scrollHeight;
         });
-      });
+      })();
     }
 
-    pmSend.onclick = async ()=>{ if(!currentUser) return alert('Sign in first'); if(!currentPmChatId) return alert('Open PM first'); const t=pmInput.value.trim(); if(!t) return; const p=push(ref(db, `private/${currentPmChatId}/messages`)); await set(p, { uid:currentUser.uid, name:currentUser.displayName || currentUser.email, text:t, ts:serverTimestamp() }); pmInput.value=''; };
-
-    pmClose.onclick = ()=>{ pmOverlay.style.display='none'; pmOverlay.setAttribute('aria-hidden','true'); currentPmChatId=null; currentPmOtherUid=null; pmMessages.innerHTML=''; stopCall(); };
-
+    pmSend.onclick = async ()=>{ if(!currentUser) return alert('Sign in first'); if(!currentPmChatId) return alert('Open PM first'); const t=pmInput.value.trim(); if(!t) return; const p=push(ref(db, `private/${currentPmChatId}/messages`)); await set(p, { uid:currentUser.uid, name:currentUser.displayName || currentUser.email, text:t, ts: serverTimestamp() }); pmInput.value=''; };
+    pmClose.onclick = ()=>{ pmOverlay.style.display='none'; currentPmChatId=null; currentPmOtherUid=null; pmMessages.innerHTML=''; stopCall(); };
     pmAddFriend.onclick = async ()=>{ if(!currentUser||!currentPmOtherUid) return alert('Sign in and open PM'); await set(ref(db, `friendRequests/${currentPmOtherUid}/${currentUser.uid}`), { from: currentUser.uid, ts: serverTimestamp() }); alert('Friend request sent'); };
-
     pmBlock.onclick = async ()=>{ if(!currentUser||!currentPmOtherUid) return alert('Sign in and open PM'); await set(ref(db, `blocks/${currentUser.uid}/${currentPmOtherUid}`), true); alert('Blocked user'); };
 
-    // WebRTC signaling (simple)
+    // WebRTC simple signalling
     let pc=null, localStream=null, remoteStream=null, signalingRef=null;
     const rtcConfig = { iceServers:[{urls:'stun:stun.l.google.com:19302'}] };
 
@@ -554,12 +624,12 @@
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       await push(signalingRef, { type:'offer', desc:pc.localDescription, from:currentUser.uid });
-      pmSub.innerText = `Calling (${kind}) — /webrtc/${currentPmChatId}`;
+      document.getElementById('pmSub').innerText = `Calling (${kind}) — /webrtc/${currentPmChatId}`;
     }
 
     async function stopCall(){
       try{ if(pc){ pc.close(); pc=null; } if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; localVideo.srcObject=null; } if(remoteStream){ remoteStream.getTracks().forEach(t=>t.stop()); remoteStream=null; remoteVideo.srcObject=null; } if(signalingRef) await push(signalingRef, { type:'hangup', from: currentUser?currentUser.uid:'anon' }); }catch(e){ console.warn(e); }
-      pmSub.innerText = `Private chat: ${currentPmChatId}`;
+      document.getElementById('pmSub').innerText = `Private chat: ${currentPmChatId}`;
     }
 
     document.getElementById('btnAudioCall').onclick = ()=> startCall('audio');
@@ -575,16 +645,23 @@
     // initial load
     loadRooms(); loadUsers();
 
-    // helper: set role (owner/vip/admin) - owner should run this from console or admin UI (we left console helper)
-    window.setRole = async (uid,role)=>{ await set(ref(db, `roles/${uid}`), role); alert('Role set'); };
+    // Admin quick set/remove role (only owner allowed)
+    setRoleBtn.onclick = async ()=>{
+      if(!currentUser) return alert('Sign in first');
+      const myRoleSnap = await get(ref(db, `roles/${currentUser.uid}`));
+      if(!myRoleSnap.exists() || myRoleSnap.val()!=='owner') return alert('Only owner can set roles.');
+      const target = adminUidInput.value.trim();
+      const role = roleSelect.value;
+      if(!target) return alert('Enter uid to set');
+      if(role) { await set(ref(db, `roles/${target}`), role); alert('Role set.'); } else { await remove(ref(db, `roles/${target}`)); alert('Role removed.'); }
+      loadUsers();
+    };
+    revokeRoleBtn.onclick = async ()=>{ adminUidInput.value=''; roleSelect.value=''; alert('Choose role and uid then Set role to make changes.'); };
 
-    // small UI focus improvements
-    msgInput.addEventListener('focus', ()=> { if(window.innerWidth <= 480) window.scrollTo(0, document.body.scrollHeight); });
+    // helper for console: setRole(uid,role) - owner only
+    window.setRole = async (uid,role)=>{ const myRoleSnap = await get(ref(db, `roles/${auth.currentUser.uid}`)); if(!myRoleSnap.exists() || myRoleSnap.val()!=='owner') return alert('Only owner can set roles'); await set(ref(db, `roles/${uid}`), role); alert('Role set'); };
 
-    // accessibility: keyboard support for closing pm and menus
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ if(pmOverlay.style.display==='flex') pmClose.click(); menuPanel.style.display='none'; } });
-
-    console.log('FunTimeChat final script loaded');
+    console.log('FunTimeChat final script loaded with Google + Email + Anonymous auth');
   </script>
 </body>
 </html>
