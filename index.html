@@ -1,289 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FunTime — Chat</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FunTime Chat</title>
+
   <style>
-    :root{
-      --sky: #00bfff;
-      --white: #ffffff;
-      --accent1: #7dd3fc;
-      --accent2: #fbc2eb;
-      --accent3: #ffd6a5;
-      --card: #ffffff;
-      --muted: #6b7280;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
+    body {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      font-family: Arial, sans-serif;
       margin:0;
-      font-family:Inter, system-ui, Arial, sans-serif;
-      background: linear-gradient(45deg, var(--accent1), var(--accent2), var(--accent3));
-      background-size:400% 400%;
-      animation: bg 12s infinite alternate;
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-      padding:22px 12px;
-      color:#0f172a;
+      padding:0;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
-    @keyframes bg { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
-
-    .wrap{
-      width:100%;
-      max-width:980px;
+    header {
+      text-align: center;
+      padding: 12px;
+      font-size: 23px;
+      font-weight: bold;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(6px);
     }
-
-    header{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:12px 14px;
-      background: rgba(255,255,255,0.95);
-      border-radius:12px;
-      box-shadow:0 8px 30px rgba(15,23,42,0.12);
-      margin-bottom:18px;
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
     }
-    /* Logo: white + sky-blue */
-    .logoBubble{
-      width:56px; height:56px; border-radius:10px;
-      background: linear-gradient(180deg,var(--white),var(--sky));
-      display:flex; align-items:center; justify-content:center;
-      font-weight:900; color:#073b66; font-size:20px;
-      box-shadow:0 6px 18px rgba(0,0,0,0.06);
+    .msg {
+      margin-bottom: 10px;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 12px;
+      border-radius: 10px;
+      width: fit-content;
+      max-width: 85%;
     }
-    .brand{
-      font-size:20px; font-weight:800; color:#073b66;
+    #inputBox {
+      display: flex;
+      padding: 10px;
+      background: rgba(0,0,0,0.25);
     }
-    .brand small{ display:block; font-size:12px; color:var(--muted); font-weight:600; }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 360px 1fr;
-      gap:16px;
+    #msgInput {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
     }
-
-    /* Card */
-    .card{
-      background: var(--card);
-      border-radius:12px;
-      padding:14px;
-      box-shadow:0 14px 40px rgba(2,6,23,0.06);
+    #sendBtn {
+      margin-left: 8px;
+      padding: 11px 18px;
+      border: none;
+      background: #ffc107;
+      color: black;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
     }
-
-    /* Left: Login */
-    .left .label{ font-weight:700; color:#0b4f7a; margin-bottom:8px; }
-    input[type="text"]{
-      width:100%;
-      padding:12px 10px;
-      border-radius:8px;
-      border:1px solid #e6f6ff;
-      font-size:15px;
+    #buttons {
+      display: flex;
+      justify-content: space-around;
+      padding:10px;
+      background: rgba(255,255,255,0.15);
     }
-    .row{ display:flex; gap:8px; margin-top:10px; }
-    .btn{
-      flex:1;
-      padding:12px;
-      border-radius:8px; /* square-ish */
+    button {
+      padding: 8px 12px;
       border:none;
-      font-weight:800;
-      cursor:pointer;
-      font-size:14px;
-      box-shadow:0 10px 24px rgba(3,105,161,0.08);
-    }
-    .btn.primary{
-      background: linear-gradient(180deg,var(--sky),#039be5);
-      color:white;
-    }
-    .btn.ghost{
-      background:transparent; color:var(--muted);
-      border:1px solid #e8f6ff;
-    }
-    .small{ padding:8px; font-size:13px; border-radius:6px; }
-
-    /* Chat area */
-    .chatHeader{ display:flex; justify-content:space-between; align-items:center; gap:12px;}
-    .you{ font-weight:800; color:#063b63; }
-    #chatBox{
-      height:420px; overflow:auto; padding:12px; margin-top:12px;
-      border-radius:10px; border:1px solid #eef8ff;
-      background:linear-gradient(180deg,#ffffff,#f7fdff);
-    }
-    .msg{ margin-bottom:10px; text-align:left; }
-    .msg .from{ font-weight:800; color:#0b5ea6; margin-right:8px; }
-    .controls{ display:flex; gap:8px; margin-top:12px; align-items:center; }
-
-    /* iframe (public chat) */
-    .publicFrame{
-      width:100%;
-      height:520px;
-      border-radius:10px;
-      border:1px solid #e6f7ff;
-    }
-
-    footer{ margin-top:18px; color:#063b63; font-weight:600; text-align:center; }
-
-    /* responsive */
-    @media(max-width:880px){
-      .grid{ grid-template-columns: 1fr; }
-      .publicFrame{ height:420px; }
-      header{ padding:10px; }
+      background:white;
+      color:black;
+      border-radius: 7px;
+      font-weight:bold;
     }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <!-- Logo bubble now shows MH -->
-      <div class="logoBubble">MH</div>
-      <div>
-        <div class="brand">FunTime <small>Chat • Public + Random (demo)</small></div>
-      </div>
-    </header>
+<header>FunTime Chat 💬</header>
 
-    <div class="grid">
-      <!-- LEFT: Login / Controls -->
-      <div class="card left">
-        <div class="label">Enter nickname</div>
-        <input id="nameInput" type="text" placeholder="Nickname (default MH)" />
-        <div class="row">
-          <button id="joinBtn" class="btn primary">Join as <span id="joinText">MH</span></button>
-          <button id="clearBtn" class="btn ghost small">Clear</button>
-        </div>
+<div id="buttons">
+  <button id="publicRoomBtn">Public Chat</button>
+  <button id="randomBtn">Random Chat</button>
+</div>
 
-        <div style="margin-top:12px; font-size:13px; color:var(--muted)">
-          <div><strong>Buttons:</strong></div>
-          <div style="display:flex; gap:8px; margin-top:8px;">
-            <button id="publicRoomBtn" class="btn ghost small">Public Room</button>
-            <button id="randomBtn" class="btn ghost small">Find Random (demo)</button>
-          </div>
-        </div>
+<div id="messages"></div>
 
-        <div style="margin-top:12px;">
-          <div style="font-weight:700; color:#0b5ea6; margin-bottom:6px;">Local chat (demo)</div>
-          <div id="chatBox" aria-live="polite"></div>
-
-          <div class="controls">
-            <input id="msgInput" type="text" placeholder="Type message..." style="flex:1; padding:10px; border-radius:8px; border:1px solid #eef9ff;" />
-            <button id="sendBtn" class="btn primary small" style="width:100px;">Send</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT: Public iframe (tlk.io) -->
-      <div class="card right">
-        <div class="chatHeader">
-          <div style="font-weight:800; color:#063b63">Public Room</div>
-          <div style="font-size:13px; color:var(--muted)">Live public room (powered by tlk.io)</div>
-        </div>
-
-        <!-- tlk.io public chat iframe -->
-        <!-- Note: this is public room named "funtime_public" -->
-        <iframe id="publicFrame" class="publicFrame" src="https://tlk.io/funtime_public" title="FunTime public chat"></iframe>
-
-        <div style="margin-top:12px; font-size:13px; color:var(--muted)">
-          Tip: Use the left panel to set your nickname (saved locally). The public chat opens in the iframe above.
-        </div>
-      </div>
-    </div>
-
-    <footer>© FunTime</footer>
-  </div>
+<div id="inputBox">
+  <input id="msgInput" placeholder="Type your message...">
+  <button id="sendBtn">Send</button>
+</div>
 
 <script>
-  // Default nickname
-  const DEFAULT_NAME = "MH";
-
-  // Elements
-  const nameInput = document.getElementById('nameInput');
-  const joinBtn = document.getElementById('joinBtn');
-  const clearBtn = document.getElementById('clearBtn');
-  const joinText = document.getElementById('joinText');
-
-  const chatBox = document.getElementById('chatBox');
-  const msgInput = document.getElementById('msgInput');
-  const sendBtn = document.getElementById('sendBtn');
-
-  const publicRoomBtn = document.getElementById('publicRoomBtn');
-  const randomBtn = document.getElementById('randomBtn');
-
-  // load name from localStorage
-  function loadName(){
-    const saved = localStorage.getItem('funtime_name');
-    const name = saved && saved.trim() ? saved : DEFAULT_NAME;
-    nameInput.value = name;
-    joinText.innerText = name;
-  }
-  loadName();
-
-  // update join button text live
-  nameInput.addEventListener('input', ()=> {
-    const n = nameInput.value.trim() || DEFAULT_NAME;
-    joinText.innerText = n;
-  });
-
-  clearBtn.addEventListener('click', ()=> {
-    localStorage.removeItem('funtime_name');
-    nameInput.value = DEFAULT_NAME;
-    joinText.innerText = DEFAULT_NAME;
-    alert('Saved name cleared — default MH set');
-  });
-
-  // join action (client-side demo)
-  joinBtn.addEventListener('click', ()=> {
-    const name = (nameInput.value.trim() || DEFAULT_NAME);
-    localStorage.setItem('funtime_name', name);
-    appendSystem(`${name} joined the demo chat`);
-    // show name on button
-    joinText.innerText = name;
-    // focus message input
-    msgInput.focus();
-  });
-
-  // simple append helpers (local demo messages)
-  function appendSystem(text){
-    const d = document.createElement('div');
-    d.className = 'msg';
-    d.innerHTML = `<em style="color:var(--muted)">${escapeHtml(text)}</em>`;
-    chatBox.appendChild(d);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-  function appendMessage(from, text){
-    const d = document.createElement('div');
-    d.className = 'msg';
-    d.innerHTML = `<span class="from">${escapeHtml(from)}</span> <span class="text">${escapeHtml(text)}</span>`;
-    chatBox.appendChild(d);
-    chatBox.scrollTop = chatBox.scrollHeight;
+  // Username ask
+  let username = localStorage.getItem("ft_name");
+  if (!username) {
+    username = prompt("Enter your name:");
+    localStorage.setItem("ft_name", username);
   }
 
-  // send message (local demo)
-  sendBtn.addEventListener('click', ()=> {
-    const txt = msgInput.value.trim();
-    if(!txt) return;
-    const name = localStorage.getItem('funtime_name') || DEFAULT_NAME;
-    appendMessage(name, txt);
-    msgInput.value = '';
-  });
-  msgInput.addEventListener('keydown', (e)=> {
-    if(e.key === 'Enter') sendBtn.click();
+  const msgBox = document.getElementById("messages");
+  const sendBtn = document.getElementById("sendBtn");
+  const msgInput = document.getElementById("msgInput");
+
+  function addMessage(name, text) {
+    const box = document.createElement("div");
+    box.className = "msg";
+    box.innerText = name + ": " + text;
+    msgBox.appendChild(box);
+    msgBox.scrollTop = msgBox.scrollHeight;
+  }
+
+  // Local message (demo working)
+  sendBtn.addEventListener("click", () => {
+    const t = msgInput.value.trim();
+    if (!t) return;
+    addMessage(username, t);
+    msgInput.value = "";
   });
 
-  // Public room button: scroll iframe into view (user interacts inside iframe)
-  publicRoomBtn.addEventListener('click', ()=> {
-    document.getElementById('publicFrame').scrollIntoView({behavior:'smooth'});
-    alert('Public room opened below. Use the iframe to chat publicly.');
+  msgInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") sendBtn.click();
   });
 
-  // Random button (demo)
-  randomBtn.addEventListener('click', ()=> {
-    alert('Random pairing requires a server (socket). This is a demo placeholder. I can add server-side pairing next if you want.');
+  // Buttons
+  document.getElementById("publicRoomBtn").addEventListener("click", () => {
+    alert("Public Chat Activated (Server connect after update)");
   });
 
-  // basic html-escape
-  function escapeHtml(s){
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  document.getElementById("randomBtn").addEventListener("click", () => {
+    alert("Random chat match coming soon...");
+  });
+
+  // Notifications ask
+  if (Notification && Notification.permission !== "granted") {
+    Notification.requestPermission();
   }
 </script>
+
 </body>
-  </html>
+</html>
