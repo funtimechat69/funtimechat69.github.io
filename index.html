@@ -29,153 +29,81 @@
 <body>
   <div class="card">
     <div class="header">
-      <div class="logo" id="logo">MH</div>
+      <div class="logo" id="logo">FT</div>
       <div>
         <h1>FunTime Chat</h1>
-        <div style="color:#666;font-size:13px">Chat · Public + Random (demo)</div>
+        <div style="color:#666;font-size:13px">Public Chat · Live</div>
       </div>
     </div>
 
     <label>Enter nickname</label>
-    <input id="nick" type="text" placeholder="Type nickname (e.g. MH)">
+    <input id="nick" type="text" placeholder="Type nickname">
 
     <div class="row">
-      <button id="joinBtn" class="btn btn-primary">Join</button>
+      <button id="joinBtn" class="btn btn-primary">Save Name</button>
       <button id="clearBtn" class="btn">Clear</button>
     </div>
 
-    <div class="small">Buttons:</div>
-    <div class="row" style="margin-top:8px">
-      <button id="publicBtn" class="btn">Public Room</button>
-      <button id="randomBtn" class="btn">Find Random (demo)</button>
-    </div>
-
-    <div class="small" style="margin-top:12px">Local chat (demo)</div>
     <div id="chat" class="chatbox"></div>
 
     <div style="display:flex;gap:8px;margin-top:10px">
       <input id="msg" type="text" placeholder="Type message" style="flex:1;padding:10px;border-radius:8px;border:1px solid #ddd">
       <button id="send" class="btn btn-primary" style="width:110px">Send</button>
     </div>
-    <div class="small">This demo stores messages only in your browser (localStorage). For real public chat you need a server (Firebase / socket).</div>
   </div>
 
-  <script>
-    // Simple local demo (no server)
-    const chatEl = document.getElementById('chat');
-    const nickEl = document.getElementById('nick');
-    const msgEl = document.getElementById('msg');
-    const joinBtn = document.getElementById('joinBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const sendBtn = document.getElementById('send');
-    const publicBtn = document.getElementById('publicBtn');
-    const randomBtn = document.getElementById('randomBtn');
-
-    function loadMessages(){
-      const arr = JSON.parse(localStorage.getItem('ft_messages')||'[]');
-      chatEl.innerHTML = '';
-      arr.forEach(m=>{
-        const d = document.createElement('div');
-        d.className='msg';
-        d.innerHTML = '<strong>'+escapeHtml(m.name)+':</strong> '+escapeHtml(m.text);
-        chatEl.appendChild(d);
-      });
-      chatEl.scrollTop = chatEl.scrollHeight;
-    }
-
-    function saveMessage(name,text){
-      const arr = JSON.parse(localStorage.getItem('ft_messages')||'[]');
-      arr.push({name,text,time:Date.now()});
-      localStorage.setItem('ft_messages', JSON.stringify(arr));
-      loadMessages();
-    }
-
-    joinBtn.onclick = ()=>{
-      const n = (nickEl.value||'').trim()||'Guest';
-      localStorage.setItem('ft_nick', n);
-      alert('Joined as ' + n + ' (local demo)');
-    };
-    clearBtn.onclick = ()=>{
-      nickEl.value=''; localStorage.removeItem('ft_nick'); alert('Nickname cleared');
-    };
-
-    sendBtn.onclick = ()=>{
-      const text = (msgEl.value||'').trim();
-      if(!text) return;
-      const name = localStorage.getItem('ft_nick') || (nickEl.value||'Guest');
-      saveMessage(name, text);
-      msgEl.value = '';
-    };
-
-    msgEl.addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter') sendBtn.click();
-    });
-
-    publicBtn.onclick = ()=>{ alert('Public room demo. For real public chat you need a backend (Firebase/Socket).'); }
-    randomBtn.onclick = ()=>{ alert('Random pairing demo. Requires server to match users.'); }
-
-    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-    // restore nickname & messages
-    nickEl.value = localStorage.getItem('ft_nick') || '';
-    loadMessages();
-  </script>
   <script type="module">
-  // Firebase import
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    // Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-  // 🔥 Firebase Config (Yahan tumhara config paste karo)
-  const firebaseConfig = {
-    apiKey: "AIzaSyB__tJ3sv3cB2N3vKHFCv8SYngJENQxwhY",
-    authDomain: "funtimechat69-39947.firebaseapp.com",
-    projectId: "funtimechat69-39947",
-    storageBucket: "funtimechat69-39947.firebasestorage.app",
-    messagingSenderId: "559638056734",
-    appId: "1:559638056734:web:9329d2b561b6fab106830f",
-    databaseURL: "https://funtimechat69-39947-default-rtdb.firebaseio.com"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyB__tJ3sv3cB2N3vKHFCv8SYngJENQxwhY",
+      authDomain: "funtimechat69-39947.firebaseapp.com",
+      projectId: "funtimechat69-39947",
+      storageBucket: "funtimechat69-39947.firebasestorage.app",
+      messagingSenderId: "559638056734",
+      appId: "1:559638056734:web:9329d2b561b6fab106830f",
+      databaseURL: "https://funtimechat69-39947-default-rtdb.firebaseio.com"
+    };
 
-  // 🔥 Firebase Init
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const chatRef = ref(db, "messages");
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const chatRef = ref(db, "messages");
 
-  const msgBox = document.getElementById("message");
-  const sendBtn = document.getElementById("sendBtn");
-  const chatArea = document.getElementById("messages");
-  const nickEl = document.getElementById("nickname");
+    const nickEl = document.getElementById("nick");
+    const msgEl = document.getElementById("msg");
+    const chatEl = document.getElementById("chat");
+    const sendBtn = document.getElementById("send");
+    const joinBtn = document.getElementById("joinBtn");
+    const clearBtn = document.getElementById("clearBtn");
 
-  // 📝 Send message
-  sendBtn.onclick = function () {
-    const text = msgBox.value.trim();
-    const nick = nickEl.value.trim() || "Anonymous";
+    // Save nickname
+    joinBtn.onclick = ()=>{ localStorage.setItem("nickname", nickEl.value.trim()); alert("Saved!"); };
+    clearBtn.onclick = ()=>{ localStorage.removeItem("nickname"); nickEl.value=""; };
 
-    if (text !== "") {
-      push(chatRef, {
-        name: nick,
-        msg: text,
-        time: Date.now()
-      });
-      msgBox.value = "";
-    }
-  };
+    nickEl.value = localStorage.getItem("nickname") || "";
 
-  // 📥 Load messages live
-  onChildAdded(chatRef, (snapshot) => {
-    const data = snapshot.val();
-    const div = document.createElement("div");
-    div.className = "message";
-    div.innerHTML = `<strong>${data.name}:</strong> ${data.msg}`;
-    chatArea.appendChild(div);
-    chatArea.scrollTop = chatArea.scrollHeight;
-  });
+    // Send Message
+    sendBtn.onclick = ()=>{
+      const text = msgEl.value.trim();
+      const nick = nickEl.value.trim() || "Guest";
+      if(text){
+        push(chatRef,{ name:nick, msg:text, time:Date.now() });
+        msgEl.value = "";
+      }
+    };
+    msgEl.addEventListener("keydown", e=>{ if(e.key==="Enter") sendBtn.click(); });
 
-  // 💾 Nickname save remember
-  nickEl.addEventListener("input", () => {
-    localStorage.setItem("nickname", nickEl.value);
-  });
-  nickEl.value = localStorage.getItem("nickname") || "";
+    // Load messages live
+    onChildAdded(chatRef,(snap)=>{
+      const d = snap.val();
+      const div = document.createElement("div");
+      div.className="msg";
+      div.innerHTML = `<strong>${d.name}:</strong> ${d.msg}`;
+      chatEl.appendChild(div);
+      chatEl.scrollTop = chatEl.scrollHeight;
+    });
   </script>
 </body>
-</html>
+      </html>
