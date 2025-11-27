@@ -1,142 +1,639 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FunTime Chat</title>
-
+  <title>FunTime Chat — Full (Rooms, PM, Friends, Block)</title>
   <style>
-    :root{--bg1:#73d0ff;--bg2:#09a8ff;--card:#ffffff}
-    body{
-      margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));
-      font-family:Arial,Helvetica,sans-serif;
-      min-height:100vh;display:flex;justify-content:center;padding:30px 12px;
+    :root{
+      --bg1:#9be7ff; --bg2:#ffc0e6; --card:#fff; --muted:#6b7280;
+      --accent-start:#6ec6ff; --accent-end:#ff8ac6; --green:#2ecc71; --danger:#ff6b6b;
+      --textdark:#042033; font-family:Inter,Arial,Helvetica,sans-serif;
     }
-    .card{width:100%;max-width:420px;background:#fff;border-radius:15px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,0.12)}
-    .header{display:flex;gap:12px;align-items:center;margin-bottom:10px}
-    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(180deg,#c3eaff,#52c5ff);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px;color:#003b53}
-    h1{margin:0;font-size:22px;color:#033}
-    label{display:block;margin-top:10px;font-weight:600;color:#055}
-    input[type=text]{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}
-    .row{display:flex;gap:10px;margin-top:12px}
-    .btn{flex:1;padding:11px;border-radius:10px;background:#fff;border:1px solid #dcdcdc;cursor:pointer;font-weight:700}
-    .btn-primary{background:linear-gradient(90deg,var(--bg1),var(--bg2));color:#fff;border:none;box-shadow:0 6px 12px rgba(9,148,255,0.18)}
-    .chatbox{height:360px;background:#f8fbff;border-radius:10px;margin-top:14px;padding:12px;overflow:auto;border:1px solid #eee}
-    .msg{padding:8px 10px;border-radius:8px;margin-bottom:8px;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,0.03)}
-
-    /* Terms Popup */
-    .rulesBox{
-      position:fixed;inset:0;background:rgba(0,0,0,0.55);display:none;
-      justify-content:center;align-items:center;padding:20px;
-    }
-    .rulesCard{
-      background:#fff;width:100%;max-width:450px;border-radius:14px;
-      padding:18px;max-height:90vh;overflow:auto;
-    }
-    .rulesCard h2{margin-top:0;text-align:center;color:#044}
-    .rulesCard ul{padding-left:20px;line-height:1.5;color:#333}
-    .closeBtn{padding:10px;width:100%;border-radius:10px;margin-top:15px;background:#ff4444;color:#fff;font-weight:700;border:none;cursor:pointer}
-    .rulesBtn{margin-top:14px;text-align:center;color:#0058a2;font-weight:700;cursor:pointer}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:28px;}
+    .card{width:100%;max-width:1200px;background:var(--card);border-radius:14px;padding:14px;box-shadow:0 12px 40px rgba(0,0,0,.12);display:flex;gap:12px}
+    .left{flex:2;display:flex;flex-direction:column;min-width:480px}
+    .right{flex:1;display:flex;flex-direction:column;min-width:320px}
+    .header{display:flex;align-items:center;justify-content:space-between}
+    .logo{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent-start),var(--accent-end));display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--textdark);font-size:20px}
+    h1{margin:0;font-size:18px;color:var(--textdark)}
+    .sub{color:var(--muted);font-size:13px}
+    .toolbar{display:flex;gap:8px;align-items:center;margin-top:8px;margin-bottom:8px}
+    .messages{flex:1;overflow:auto;padding:12px;border-radius:10px;border:1px solid #eef7fb;background:linear-gradient(180deg,#fbfeff,#f7fcff)}
+    .msg{margin-bottom:10px;max-width:78%}
+    .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .bubble{padding:10px 12px;border-radius:12px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.03)}
+    .bubble.me{background:linear-gradient(90deg,var(--accent-start),var(--accent-end));color:#042033;margin-left:auto}
+    .sendRow{display:flex;gap:8px;margin-top:10px}
+    input[type="text"], input[type="search"]{flex:1;padding:10px;border-radius:10px;border:1px solid #e6f3fb}
+    button{padding:10px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent-start),var(--accent-end));color:#022;cursor:pointer;font-weight:700}
+    .usersBox{padding:10px;border-radius:10px;border:1px solid #f0f6fb;background:#fff;overflow:auto;max-height:420px}
+    .userRow{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px}
+    .userLeft{display:flex;align-items:center;gap:10px}
+    .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#eafcff,#ffeaf5);display:flex;align-items:center;justify-content:center;font-weight:800;color:#033}
+    .small{font-size:13px;color:var(--muted)}
+    .pill{padding:6px 10px;border-radius:999px;border:1px solid #eee;background:#fff;cursor:pointer}
+    .sectionTitle{font-weight:800;margin-bottom:6px}
+    /* room create panel */
+    .roomList{display:flex;flex-direction:column;gap:6px}
+    .roomRow{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px;background:#fbfdff}
+    /* PM popup */
+    .pmOverlay{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:60}
+    .pmCard{width:92%;max-width:880px;background:#fff;border-radius:10px;padding:12px;display:flex;gap:12px}
+    .pmLeft{flex:1;display:flex;flex-direction:column}
+    .pmRight{width:300px;border-left:1px solid #eee;padding-left:10px}
+    .pmMessages{flex:1;overflow:auto;padding:8px;border-radius:8px;background:#fbfdff}
+    .pmInputRow{display:flex;gap:8px;margin-top:8px}
+    .closeX{background:#ff6b6b;color:#fff;border-radius:8px;padding:6px 8px;border:none;cursor:pointer}
+    @media (max-width:980px){ .card{flex-direction:column} .left,.right{min-width:unset} .pmCard{flex-direction:column} .pmRight{width:100%;border-left:none;padding:0} }
   </style>
 </head>
-
 <body>
   <div class="card">
-    <div class="header">
-      <div class="logo">FT</div>
-      <div>
-        <h1>FunTime Chat</h1>
-        <div style="color:#666;font-size:13px">Public Chat · Live</div>
+    <div class="left">
+      <div class="header">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="logo">MH</div>
+          <div>
+            <h1>FunTime Chat</h1>
+            <div class="sub">Public · Rooms · Private PMs (friends only)</div>
+          </div>
+        </div>
+        <div id="userArea"></div>
+      </div>
+
+      <div class="toolbar">
+        <div style="display:flex;gap:8px;">
+          <button class="pill" id="btnPublic">Public Room</button>
+          <button class="pill" id="btnMyRooms">My Rooms</button>
+          <button class="pill" id="btnCreateRoom">Create Room</button>
+          <button class="pill" id="btnMatch">Find Random</button>
+        </div>
+        <div style="flex:1"></div>
+        <div class="small">Current: <strong id="currentRoomLabel">room1 (Public)</strong></div>
+      </div>
+
+      <div class="messages" id="messages"></div>
+
+      <div class="sendRow">
+        <input id="msgInput" type="text" placeholder="Type message and press Send..." />
+        <button id="sendBtn">Send</button>
+      </div>
+      <div class="small" style="margin-top:8px">Messages saved under <code id="pathInfo">/chats/room1/messages</code></div>
+    </div>
+
+    <div class="right">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div>
+          <div class="sectionTitle">Rooms</div>
+          <div class="small">Public & invite-only rooms</div>
+        </div>
+        <div>
+          <button class="pill" id="btnRules">Rules</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:8px">
+        <div class="small" style="margin-bottom:6px">Create room</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <input id="newRoomName" placeholder="Room name" style="flex:1;padding:8px;border-radius:8px;border:1px solid #eee" />
+          <select id="newRoomType" style="padding:8px;border-radius:8px;border:1px solid #eee">
+            <option value="public">Public</option>
+            <option value="invite">Invite-only</option>
+          </select>
+          <button class="pill" id="createRoomBtn">Create</button>
+        </div>
+      </div>
+
+      <div style="font-weight:700;margin-bottom:6px">Available Rooms</div>
+      <div id="roomsList" class="usersBox roomList"></div>
+
+      <div style="font-weight:700;margin-top:12px;margin-bottom:6px">People</div>
+      <div id="allUsers" class="usersBox"></div>
+
+      <div style="font-weight:700;margin-top:12px;margin-bottom:6px">Friends</div>
+      <div id="friendsList" class="usersBox"></div>
+
+      <div style="font-weight:700;margin-top:12px;margin-bottom:6px">Friend Requests</div>
+      <div id="friendReqs" class="usersBox small"></div>
+
+      <div class="small" style="margin-top:8px">Status at <code>/status/{uid}</code> • Users at <code>/users/{uid}</code></div>
+    </div>
+  </div>
+
+  <!-- PM popup -->
+  <div id="pmOverlay" class="pmOverlay">
+    <div class="pmCard">
+      <div class="pmLeft">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div id="pmTitle" style="font-weight:800">Private Chat</div>
+            <div class="small" id="pmSub"></div>
+          </div>
+          <div>
+            <button id="pmClose" class="closeX">Close</button>
+          </div>
+        </div>
+        <div class="pmMessages" id="pmMessages"></div>
+        <div class="pmInputRow">
+          <input id="pmInput" type="text" placeholder="Type private message..." style="flex:1;padding:8px;border-radius:8px;border:1px solid #eee" />
+          <button id="pmSend" style="padding:8px 12px;border-radius:8px;background:linear-gradient(90deg,var(--accent-start),var(--accent-end));border:none;color:#033;font-weight:700">Send</button>
+        </div>
+      </div>
+      <div class="pmRight">
+        <div style="font-weight:700;margin-bottom:8px">Profile</div>
+        <div id="pmProfile" style="display:flex;gap:8px;align-items:center">
+          <div class="avatar" id="pmAvatar"></div>
+          <div>
+            <div id="pmName" style="font-weight:700"></div>
+            <div class="small" id="pmEmail"></div>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <button id="pmAddFriend" class="pill">Add Friend</button>
+          <div style="height:8px"></div>
+          <div class="small">Private messages saved under <code>/private/{chatId}/messages</code></div>
+          <div style="height:8px"></div>
+          <button id="pmBlock" class="pill" style="background:#ffefef;border:1px solid var(--danger)">Block User</button>
+        </div>
       </div>
     </div>
-
-    <label>Enter nickname</label>
-    <input id="nick" type="text" placeholder="Type nickname">
-
-    <div class="row">
-      <button id="joinBtn" class="btn btn-primary">Save Name</button>
-      <button id="clearBtn" class="btn">Clear</button>
-    </div>
-
-    <div id="chat" class="chatbox"></div>
-
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <input id="msg" type="text" placeholder="Type message" style="flex:1;padding:10px;border-radius:8px;border:1px solid #ddd">
-      <button id="send" class="btn btn-primary" style="width:110px">Send</button>
-    </div>
-
-    <div class="rulesBtn" id="rulesOpen">📌 नियम और शर्तें (Rules & Policy)</div>
   </div>
 
-  <!-- Rules Popup -->
-  <div class="rulesBox" id="rulesBox">
-    <div class="rulesCard">
-      <h2>FunTime Chat – नियम और शर्तें</h2>
+  <!-- Rules modal -->
+  <div id="rulesModal" style="display:none;position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center">
+    <div style="background:#fff;padding:16px;border-radius:10px;max-width:720px;margin:40px auto;color:#022">
+      <h3>FunTime Chat — Rules</h3>
       <ul>
-        <li>किसी भी यूज़र को गाली देना / अपमान करना मना है।</li>
-        <li>धर्म, राजनीति, जाति पर भड़काऊ बातें मना हैं।</li>
-        <li>एडल्ट / 18+ फोटो, वीडियो या बातें बिल्कुल मना हैं।</li>
-        <li>फ़ोन नंबर, लोकेशन, OTP, बैंक डिटेल शेयर ना करें।</li>
-        <li>किसी भी तरह की स्पैमिंग या विज्ञापन पोस्ट नहीं करें।</li>
-        <li>नियम का पालन न करने पर अकाउंट ब्लॉक या रिपोर्ट किया जा सकता है।</li>
+        <li>No abusive language</li>
+        <li>No harassment / hate speech</li>
+        <li>No sharing of sensitive personal data</li>
+        <li>No spam or advertisements</li>
       </ul>
-      <button class="closeBtn" id="rulesClose">Close</button>
+      <div style="text-align:right"><button id="closeRules" class="pill">Close</button></div>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  <!-- notification sound -->
+  <audio id="notifySound"><source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YQQAAAAA" type="audio/wav"></audio>
 
+  <!-- Firebase modular SDK v9 -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
+    import {
+      getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged
+    } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
+    import {
+      getDatabase, ref, set, push, onChildAdded, onValue, update, onDisconnect, serverTimestamp, get, child, remove
+    } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js';
+
+    // ---------- FIREBASE CONFIG (YOUR project) ----------
     const firebaseConfig = {
       apiKey: "AIzaSyB__tJ3sv3cB2N3vKHFCv8SYngJENQxwhY",
       authDomain: "funtimechat69-39947.firebaseapp.com",
+      databaseURL: "https://funtimechat69-39947-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "funtimechat69-39947",
-      storageBucket: "funtimechat69-39947.appspot.com",
+      storageBucket: "funtimechat69-39947.firebasestorage.app",
       messagingSenderId: "559638056734",
-      appId: "1:559638056734:web:9329d2b561b6fab106830f",
-      databaseURL: "https://funtimechat69-39947-default-rtdb.firebaseio.com"
+      appId: "1:559638056734:web:9329d2b561b6fab106830f"
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getDatabase(app);
-    const chatRef = ref(db,"messages");
+    const provider = new GoogleAuthProvider();
 
-    const nickEl = document.getElementById("nick");
-    const msgEl = document.getElementById("msg");
-    const chatEl = document.getElementById("chat");
+    // UI refs
+    const userArea = document.getElementById('userArea');
+    const messagesEl = document.getElementById('messages');
+    const msgInput = document.getElementById('msgInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const allUsersEl = document.getElementById('allUsers');
+    const friendsListEl = document.getElementById('friendsList');
+    const friendReqsEl = document.getElementById('friendReqs');
+    const pmOverlay = document.getElementById('pmOverlay');
+    const pmTitle = document.getElementById('pmTitle');
+    const pmSub = document.getElementById('pmSub');
+    const pmMessages = document.getElementById('pmMessages');
+    const pmInput = document.getElementById('pmInput');
+    const pmSend = document.getElementById('pmSend');
+    const pmClose = document.getElementById('pmClose');
+    const pmAvatar = document.getElementById('pmAvatar');
+    const pmName = document.getElementById('pmName');
+    const pmEmail = document.getElementById('pmEmail');
+    const pmAddFriend = document.getElementById('pmAddFriend');
+    const pmBlock = document.getElementById('pmBlock');
+    const notifySound = document.getElementById('notifySound');
+    const btnMatch = document.getElementById('btnMatch');
+    const btnRules = document.getElementById('btnRules');
+    const rulesModal = document.getElementById('rulesModal');
+    const closeRules = document.getElementById('closeRules');
+    const roomsList = document.getElementById('roomsList');
+    const createRoomBtn = document.getElementById('createRoomBtn');
+    const newRoomName = document.getElementById('newRoomName');
+    const newRoomType = document.getElementById('newRoomType');
+    const currentRoomLabel = document.getElementById('currentRoomLabel');
+    const pathInfo = document.getElementById('pathInfo');
 
-    document.getElementById("joinBtn").onclick = ()=>{
-      const n = nickEl.value.trim();
-      if(n){ localStorage.setItem("nickname",n); alert("Nickname saved!"); }
-    };
-    document.getElementById("clearBtn").onclick = ()=>{
-      localStorage.removeItem("nickname"); nickEl.value = "";
-    };
-    nickEl.value = localStorage.getItem("nickname") || "";
+    let currentUser = null;
+    let currentRoom = 'room1'; // default public
+    let currentPmChatId = null;
+    let currentPmOtherUid = null;
 
-    document.getElementById("send").onclick = ()=>{
-      const text = msgEl.value.trim();
-      const nick = nickEl.value.trim() || "Guest";
-      if(text){
-        push(chatRef,{name:nick,msg:text,time:Date.now()});
-        msgEl.value = "";
+    // helper
+    function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    // AUTH UI
+    function renderUserUI(user){
+      if(!user){
+        userArea.innerHTML = `<button class="pill" id="loginBtn">Sign in with Google</button>`;
+        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
+      } else {
+        userArea.innerHTML = `
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="text-align:right">
+              <div style="font-weight:800">${esc(user.displayName || user.email)}</div>
+              <div class="small">${esc(user.email || '')}</div>
+            </div>
+            <button class="pill" id="logoutBtn">Logout</button>
+          </div>`;
+        document.getElementById('logoutBtn').onclick = () => signOut(auth);
       }
-    };
-    msgEl.addEventListener("keydown", e=>{ if(e.key==="Enter") document.getElementById("send").click(); });
+    }
 
-    onChildAdded(chatRef,(snap)=>{
-      const d = snap.val();
-      const div = document.createElement("div");
-      div.className = "msg";
-      div.innerHTML = `<strong>${d.name}:</strong> ${d.msg}`;
-      chatEl.appendChild(div);
-      chatEl.scrollTop = chatEl.scrollHeight;
+    // Save user to DB + presence
+    async function saveUser(user){
+      if(!user) return;
+      const uRef = ref(db, 'users/' + user.uid);
+      await set(uRef, {
+        name: user.displayName || null,
+        email: user.email || null,
+        photoURL: user.photoURL || null,
+        createdAt: serverTimestamp()
+      });
+      // presence
+      const statusRef = ref(db, 'status/' + user.uid);
+      const conRef = ref(db, '.info/connected');
+      onValue(conRef, snap => {
+        if(snap.val() === true){
+          set(statusRef, { state: 'online', last_changed: serverTimestamp() });
+          onDisconnect(statusRef).set({ state: 'offline', last_changed: serverTimestamp() });
+        } else {
+          set(statusRef, { state: 'offline', last_changed: serverTimestamp() });
+        }
+      });
+    }
+
+    // -------- ROOM / PUBLIC MESSAGES --------
+    function setRoom(roomId, metaLabel){
+      currentRoom = roomId;
+      currentRoomLabel.innerText = metaLabel || roomId;
+      // update path info
+      pathInfo.innerText = currentRoom.startsWith('room') ? `/chats/${currentRoom}/messages` : `/rooms/${currentRoom}/messages`;
+      // clear messages
+      messagesEl.innerHTML = '';
+      // attach listener for messages in the chosen area
+      const node = currentRoom.startsWith('room') ? ref(db, `chats/${currentRoom}/messages`) : ref(db, `rooms/${currentRoom}/messages`);
+      // remove previous listeners is complex; for demo we rely on UI reset and onChildAdded continuing - small duplication is OK for demo
+      onChildAdded(node, snap => {
+        const m = snap.val();
+        // hide if blocked by current user
+        if(currentUser && m.uid){
+          get(ref(db, `blocks/${currentUser.uid}/${m.uid}`)).then(bsnap=>{
+            if(bsnap.exists() && bsnap.val() === true) {
+              // blocked: don't show this message
+              return;
+            } else {
+              addMessageToUI(m);
+            }
+          });
+        } else {
+          addMessageToUI(m);
+        }
+      });
+    }
+
+    function addMessageToUI(msg){
+      const wrap = document.createElement('div'); wrap.className='msg';
+      const meta = document.createElement('div'); meta.className='meta'; meta.innerText = `${esc(msg.name||'Anon')} • ${new Date(msg.ts||Date.now()).toLocaleTimeString()}`;
+      const bubble = document.createElement('div'); bubble.className='bubble' + ((currentUser && msg.uid === currentUser.uid) ? ' me' : '');
+      bubble.innerText = msg.text;
+      wrap.appendChild(meta); wrap.appendChild(bubble);
+      messagesEl.appendChild(wrap);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    // send message in current room (rooms or chats)
+    async function sendMessageCurrentRoom(){
+      const text = msgInput.value.trim(); if(!text) return;
+      if(!currentUser) return alert('Sign in first');
+      const path = currentRoom.startsWith('room') ? `chats/${currentRoom}/messages` : `rooms/${currentRoom}/messages`;
+      const p = push(ref(db, path));
+      await set(p, { uid: currentUser.uid, name: currentUser.displayName || currentUser.email, text, ts: serverTimestamp() });
+      msgInput.value = '';
+    }
+
+    sendBtn.onclick = sendMessageCurrentRoom;
+    msgInput.addEventListener('keydown', e=>{ if(e.key==='Enter') sendBtn.click(); });
+
+    // ensure default room1 welcome
+    (async function ensureWelcome(){
+      const s = await get(ref(db, `chats/${'room1'}/messages`));
+      if(!s.exists()){
+        const p = push(ref(db, `chats/${'room1'}/messages`));
+        await set(p, { uid:'system', name:'System', text:'Welcome to FunTime Chat — room1 public', ts: serverTimestamp() });
+      }
+    })();
+
+    // ---- ROOMS: create / list / join ----
+    async function createRoom(name, type){
+      if(!currentUser) return alert('Sign in first');
+      if(!name || !name.trim()) return alert('Enter room name');
+      const id = name.trim().toLowerCase().replace(/\s+/g,'_') + '_' + Date.now().toString(36);
+      const meta = { name: name.trim(), owner: currentUser.uid, type: type, createdAt: serverTimestamp() };
+      await set(ref(db, `rooms/${id}/meta`), meta);
+      // owner automatically member
+      await set(ref(db, `rooms/${id}/members/${currentUser.uid}`), true);
+      alert('Room created: ' + name);
+      loadRooms(); // refresh list
+    }
+
+    createRoomBtn.onclick = ()=> createRoom(newRoomName.value, newRoomType.value);
+
+    async function loadRooms(){
+      const snap = await get(ref(db, 'rooms'));
+      const obj = snap.val() || {};
+      roomsList.innerHTML = '';
+      Object.keys(obj).forEach(id=>{
+        const m = obj[id].meta || {};
+        const row = document.createElement('div'); row.className='roomRow';
+        const left = document.createElement('div'); left.style.display='flex'; left.style.flexDirection='column';
+        left.innerHTML = `<div style="font-weight:700">${esc(m.name||id)}</div><div class="small">${esc(m.type||'public')}</div>`;
+        const right = document.createElement('div');
+        const join = document.createElement('button'); join.className='pill'; join.innerText='Join';
+        join.onclick = async ()=>{
+          // check invite if invite-only
+          if(m.type === 'invite'){
+            const allowed = await get(child(ref(db), `rooms/${id}/members/${currentUser ? currentUser.uid : 'nogu'}`));
+            if(!allowed.exists()){
+              return alert('Invite-only room. Ask owner to add you.');
+            }
+          }
+          setRoom(id, m.name || id);
+        };
+        const inviteBtn = document.createElement('button'); inviteBtn.className='pill'; inviteBtn.innerText='Invite';
+        inviteBtn.onclick = async ()=>{
+          if(!currentUser) return alert('Sign in first');
+          if(m.owner !== currentUser.uid) return alert('Only owner can invite (demo). Owner can add friend using DB or UI later).');
+          const uid = prompt('Enter UID to invite (demo) — use user ID from console');
+          if(uid) {
+            await set(ref(db, `rooms/${id}/members/${uid}`), true);
+            alert('Invited UID: ' + uid);
+          }
+        };
+        right.appendChild(join); right.appendChild(inviteBtn);
+        row.appendChild(left); row.appendChild(right);
+        roomsList.appendChild(row);
+      });
+    }
+
+    // ---- USERS / FRIENDS / REQUESTS / BLOCK ----
+    async function renderUsersList(usersObj, statusObj){
+      allUsersEl.innerHTML = '';
+      Object.keys(usersObj || {}).forEach(uid=>{
+        const u = usersObj[uid];
+        if(uid === (currentUser && currentUser.uid)) return;
+        const row = document.createElement('div'); row.className='userRow';
+        const left = document.createElement('div'); left.className='userLeft';
+        const a = document.createElement('div'); a.className='avatar'; a.innerText = u.name ? u.name[0].toUpperCase() : (u.email||'U')[0];
+        if(u.photoURL) { a.style.backgroundImage = `url(${u.photoURL})`; a.style.backgroundSize='cover'; a.innerText=''; }
+        const info = document.createElement('div'); info.innerHTML = `<div style="font-weight:700">${esc(u.name||u.email||'User')}</div><div class="small">${esc(u.email||'')}</div>`;
+        left.appendChild(a); left.appendChild(info);
+        const right = document.createElement('div');
+        const add = document.createElement('button'); add.className='pill'; add.innerText='Add Friend';
+        add.onclick = ()=> sendFriendRequest(uid, u);
+        const pm = document.createElement('button'); pm.className='pill'; pm.innerText='PM'; pm.style.marginLeft='6px';
+        pm.onclick = ()=> openPmPopup(uid, u);
+        const st = document.createElement('div'); st.style.marginLeft='8px'; st.innerHTML = `<div class="small">${statusObj && statusObj[uid] && statusObj[uid].state==='online' ? 'online' : 'offline'}</div>`;
+        right.appendChild(add); right.appendChild(pm); right.appendChild(st);
+        row.appendChild(left); row.appendChild(right);
+        allUsersEl.appendChild(row);
+      });
+    }
+
+    async function renderFriendsList(flist){
+      friendsListEl.innerHTML = '';
+      for(const uid of Object.keys(flist || {})){
+        const uSnap = await get(child(ref(db), 'users/' + uid));
+        const u = uSnap.val() || {};
+        const row = document.createElement('div'); row.className='userRow';
+        const left = document.createElement('div'); left.className='userLeft';
+        const a = document.createElement('div'); a.className='avatar'; a.innerText = u.name ? u.name[0].toUpperCase() : 'F';
+        if(u.photoURL){ a.style.backgroundImage = `url(${u.photoURL})`; a.style.backgroundSize='cover'; a.innerText=''; }
+        const info = document.createElement('div'); info.innerHTML = `<div style="font-weight:700">${esc(u.name||u.email||'Friend')}</div><div class="small">${esc(u.email||'')}</div>`;
+        left.appendChild(a); left.appendChild(info);
+        const right = document.createElement('div');
+        const pm = document.createElement('button'); pm.className='pill'; pm.innerText='PM';
+        pm.onclick = ()=> openPmPopup(uid, u);
+        const unfriend = document.createElement('button'); unfriend.className='pill'; unfriend.innerText='Remove'; unfriend.style.marginLeft='6px';
+        unfriend.onclick = async ()=> {
+          await set(ref(db, `friends/${currentUser.uid}/list/${uid}`), null);
+          alert('Removed friend');
+        };
+        right.appendChild(pm); right.appendChild(unfriend);
+        row.appendChild(left); row.appendChild(right);
+        friendsListEl.appendChild(row);
+      }
+    }
+
+    // friend requests render
+    function renderFriendRequests(reqs){
+      friendReqsEl.innerHTML = '';
+      if(!reqs) return;
+      Object.keys(reqs).forEach(fromUid=>{
+        const r = reqs[fromUid];
+        const d = document.createElement('div'); d.style.marginBottom='8px';
+        d.innerHTML = `<div style="font-weight:700">${esc(r.name||r.email||'User')}</div><div class="small">Requested</div>`;
+        const a = document.createElement('button'); a.className='pill'; a.style.marginRight='6px'; a.innerText='Accept';
+        const b = document.createElement('button'); b.className='pill'; b.innerText='Reject';
+        a.onclick = ()=> acceptFriend(fromUid);
+        b.onclick = ()=> rejectFriend(fromUid);
+        d.appendChild(a); d.appendChild(b);
+        friendReqsEl.appendChild(d);
+      });
+    }
+
+    // send request
+    async function sendFriendRequest(toUid, toUser){
+      if(!currentUser) return alert('Sign in first');
+      await set(ref(db, `friendRequests/${toUid}/${currentUser.uid}`), { from: currentUser.uid, name: currentUser.displayName || currentUser.email, email: currentUser.email || null, ts: serverTimestamp() });
+      alert('Friend request sent');
+    }
+
+    async function acceptFriend(fromUid){
+      if(!currentUser) return;
+      const updates = {};
+      updates[`friends/${currentUser.uid}/list/${fromUid}`] = true;
+      updates[`friends/${fromUid}/list/${currentUser.uid}`] = true;
+      updates[`friendRequests/${currentUser.uid}/${fromUid}`] = null;
+      await update(ref(db), updates);
+      alert('Friend added');
+    }
+
+    async function rejectFriend(fromUid){
+      if(!currentUser) return;
+      await set(ref(db, `friendRequests/${currentUser.uid}/${fromUid}`), null);
+    }
+
+    // ---- BLOCK (Type C) ----
+    // set a block: currentUser blocks targetUid
+    async function blockUser(targetUid){
+      if(!currentUser) return;
+      // remove mutual friendship entries
+      await set(ref(db, `friends/${currentUser.uid}/list/${targetUid}`), null);
+      await set(ref(db, `friends/${targetUid}/list/${currentUser.uid}`), null);
+      // set block entries both ways (so target can't PM and we hide their messages)
+      await set(ref(db, `blocks/${currentUser.uid}/${targetUid}`), true);
+      alert('User blocked. They were removed from your friends.');
+      // update lists UI:
+      loadAllData();
+    }
+
+    // ---- PRIVATE PM popup (Only Friends allowed to PM) ----
+    function getPrivateChatId(a,b){ return [a,b].sort().join('_'); }
+
+    async function openPmPopup(otherUid, otherUserObj){
+      if(!currentUser) return alert('Sign in first');
+      // check block conditions: if I blocked them or they blocked me, disallow
+      const myBlock = await get(ref(db, `blocks/${currentUser.uid}/${otherUid}`));
+      const theirBlock = await get(ref(db, `blocks/${otherUid}/${currentUser.uid}`));
+      if(myBlock.exists() && myBlock.val() === true) return alert('You have blocked this user.');
+      if(theirBlock.exists() && theirBlock.val() === true) return alert('You are blocked by this user.');
+
+      // PM allowed only if friends
+      const friendSnap = await get(ref(db, `friends/${currentUser.uid}/list/${otherUid}`));
+      if(!friendSnap.exists()) return alert('PM allowed only for friends. Send friend request first.');
+
+      currentPmChatId = getPrivateChatId(currentUser.uid, otherUid);
+      currentPmOtherUid = otherUid;
+      // ensure meta
+      await set(ref(db, `private/${currentPmChatId}/meta`), { members: { [currentUser.uid]: true, [otherUid]: true }, last: serverTimestamp() });
+      pmTitle.innerText = `Chat with ${otherUserObj.name || otherUserObj.email || otherUid}`;
+      pmSub.innerText = otherUserObj.email || '';
+      pmAvatar.style.backgroundImage = otherUserObj.photoURL ? `url(${otherUserObj.photoURL})` : '';
+      pmAvatar.innerText = otherUserObj.photoURL ? '' : (otherUserObj.name ? otherUserObj.name[0].toUpperCase() : 'U');
+      pmName.innerText = otherUserObj.name || otherUserObj.email || '';
+      pmEmail.innerText = otherUserObj.email || '';
+      pmMessages.innerHTML = '';
+      pmOverlay.style.display = 'flex';
+
+      // listen private messages
+      const msgsRef = ref(db, `private/${currentPmChatId}/messages`);
+      onChildAdded(msgsRef, snap=>{
+        const m = snap.val();
+        const node = document.createElement('div'); node.style.marginBottom='8px';
+        node.innerHTML = `<div style="font-weight:700">${esc(m.name||m.uid)}</div><div class="small">${esc(m.text)}</div><div class="small">${new Date(m.ts||Date.now()).toLocaleString()}</div>`;
+        pmMessages.appendChild(node);
+        pmMessages.scrollTop = pmMessages.scrollHeight;
+        if(m.uid !== (currentUser && currentUser.uid)) notifySound.play().catch(()=>{});
+      });
+    }
+
+    pmClose.onclick = ()=> { pmOverlay.style.display='none'; pmMessages.innerHTML=''; currentPmChatId = null; currentPmOtherUid = null; };
+    pmSend.onclick = async ()=>{
+      const text = pmInput.value.trim(); if(!text) return;
+      if(!currentUser || !currentPmChatId || !currentPmOtherUid) return;
+      // check blocks again
+      const theirBlock = await get(ref(db, `blocks/${currentPmOtherUid}/${currentUser.uid}`));
+      if(theirBlock.exists() && theirBlock.val() === true) return alert('You are blocked by this user.');
+      const myBlock = await get(ref(db, `blocks/${currentUser.uid}/${currentPmOtherUid}`));
+      if(myBlock.exists() && myBlock.val() === true) return alert('You have blocked this user.');
+      const p = push(ref(db, `private/${currentPmChatId}/messages`));
+      await set(p, { uid: currentUser.uid, name: currentUser.displayName || currentUser.email, to: currentPmOtherUid, text, ts: serverTimestamp() });
+      pmInput.value = '';
+    };
+
+    pmAddFriend.onclick = async ()=>{
+      if(!currentUser || !currentPmOtherUid) return;
+      await sendFriendRequest(currentPmOtherUid, {}); alert('Friend request sent via PM panel');
+    };
+
+    pmBlock.onclick = async ()=>{
+      if(!currentUser || !currentPmOtherUid) return;
+      const ok = confirm('Block this user? This will remove them from your friends and prevent PMs.');
+      if(ok) await blockUser(currentPmOtherUid);
+      pmOverlay.style.display = 'none';
+    };
+
+    // ---- MATCHING queue (simple) ----
+    btnMatch.onclick = async ()=>{
+      if(!currentUser) return alert('Sign in first');
+      const q = push(ref(db, 'matching/queue'));
+      await set(q, { uid: currentUser.uid, name: currentUser.displayName || currentUser.email, ts: serverTimestamp() });
+      alert('Joined random queue — waiting for match (demo).');
+      onValue(ref(db, 'matching/queue'), async snap=>{
+        const qobj = snap.val() || {};
+        const items = Object.entries(qobj).map(([k,v])=>({ key:k, ...v }));
+        const others = items.filter(i=> i.uid !== currentUser.uid);
+        if(others.length > 0){
+          const partner = others[0];
+          const chatId = getPrivateChatId(currentUser.uid, partner.uid);
+          await set(ref(db, `private/${chatId}/meta`), { members: { [currentUser.uid]: true, [partner.uid]: true }, last: serverTimestamp() });
+          const myKey = items.find(i=> i.uid===currentUser.uid)?.key;
+          if(myKey) await set(ref(db, `matching/queue/${myKey}`), null);
+          if(partner.key) await set(ref(db, `matching/queue/${partner.key}`), null);
+          alert('Paired with ' + partner.name);
+        }
+      });
+    };
+
+    // RULES modal
+    btnRules.onclick = ()=> rulesModal.style.display='flex';
+    closeRules.onclick = ()=> rulesModal.style.display='none';
+
+    // ---- LISTENERS: users, status, friendRequests, rooms ----
+    onValue(ref(db, 'users'), async snap => {
+      const users = snap.val() || {};
+      const statusSnap = await get(ref(db, 'status'));
+      const status = statusSnap.val() || {};
+      renderUsersList(users, status);
     });
 
-    // Rules popup
-    document.getElementById("rulesOpen").onclick = ()=> document.getElementById("rulesBox").style.display="flex";
-    document.getElementById("rulesClose").onclick = ()=> document.getElementById("rulesBox").style.display="none";
+    onValue(ref(db, 'status'), snap => {
+      // update online badges by re-rendering users (simpler)
+      get(ref(db, 'users')).then(snap2 => { renderUsersList(snap2.val() || {}, snap.val() || {}); });
+    });
+
+    function listenMyData(uid){
+      if(!uid) return;
+      onValue(ref(db, `friendRequests/${uid}`), snap => { renderFriendRequests(snap.val()); });
+      onValue(ref(db, `friends/${uid}/list`), snap => { renderFriendsList(snap.val() || {}); });
+      onValue(ref(db, 'rooms'), snap => { loadRooms(); });
+      // optionally listen blocks to update UI if needed
+    }
+
+    // ---- AUTH STATE ----
+    onAuthStateChanged(auth, async user => {
+      currentUser = user;
+      renderUserUI(user);
+      if(user){
+        await saveUser(user);
+        listenMyData(user.uid);
+        // default to room1
+        setRoom('room1', 'room1 (Public)');
+      } else {
+        // clear UI
+      }
+    });
+
+    // ---- UTILITY: load rooms on start ----
+    loadRooms();
+
+    // Expose a few helpers for console debugging
+    window._ft = { openPmPopup, createRoom, sendFriendRequest, acceptFriend, blockUser };
+
+    // End of script
   </script>
 </body>
 </html>
