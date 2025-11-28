@@ -1,6 +1,7 @@
 /*
  * FUNTIMECHAT - style.css
  * Theme: White + Sky Blue + Mobile-First Responsive Layout
+ * Includes styles for all 12 integrated features.
  */
 
 :root {
@@ -15,6 +16,12 @@
     --color-error: #dc3545;
     --color-sent-bubble: #e1ffc7; /* Light Green for sent messages */
     --color-seen-tick: #00bfff; /* Blue for seen ticks */
+
+    /* Mappings for New Features (Fixed Variables) */
+    --text-color-secondary: var(--color-text-light); /* Used for typing indicator text */
+    --bg-color-hover: #f0f0f0; /* Light hover color for buttons/items */
+    --bg-color-card: var(--color-surface-light); /* Used for emoji picker background */
+    --border-color: #ccc; /* Used for borders */
 }
 
 /* 1. Global Reset and Mobile Layout */
@@ -176,18 +183,29 @@ body {
 }
 .view {
     padding-top: 10px;
+    /* Ensure chat views correctly use space */
+    display: flex; 
+    flex-direction: column;
+    height: 100%;
 }
+#auth-view {
+    display: block; /* Override flex for auth view */
+    max-width: 400px;
+    margin: 0 auto;
+}
+
 .auth-card {
     background-color: var(--color-surface-light);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    max-width: 400px;
-    margin: 30px auto;
+    margin: 30px 0;
 }
 input[type="email"],
 input[type="password"],
-#message-input {
+#message-input,
+#private-message-input,
+#friend-search-input { /* Added private and friend inputs */
     width: 100%;
     padding: 12px;
     margin-bottom: 10px;
@@ -196,20 +214,55 @@ input[type="password"],
     box-sizing: border-box;
 }
 
-/* 6. Chat View and Messages */
-#public-chat-view {
-    display: flex;
-    flex-direction: column;
-    /* Adjust height dynamically */
-    height: calc(100vh - 120px); 
+/* 6. Chat View and Messages (Public & Private) */
+#public-chat-view, #inbox-view {
+    height: 100%; 
     overflow: hidden;
     padding: 0;
+}
+#private-chat-room {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 .message-list-area {
     flex-grow: 1;
     overflow-y: auto;
     padding: 10px 15px;
+    /* Hide message container when viewing chat list */
+    max-height: calc(100vh - 200px); 
 }
+#chat-list-container {
+    padding: 0;
+}
+
+.chat-list-item { /* For Inbox/Friends/Requests */
+    background-color: var(--color-surface-light);
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+.chat-list-item:hover {
+    background-color: var(--bg-color-hover);
+}
+.chat-list-item h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-text-dark);
+}
+.chat-list-item p {
+    margin: 2px 0 0;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    flex-grow: 1;
+    padding-right: 15px;
+}
+
+
 .message-card {
     max-width: 80%;
     margin: 8px 0;
@@ -226,13 +279,12 @@ input[type="password"],
     color: #888;
     margin-bottom: 3px;
 }
-.message-card.received {
+.message-card.incoming {
     background-color: var(--color-surface-light);
     margin-right: auto;
     border-bottom-left-radius: 4px;
 }
-.message-card.delivered,
-.message-card.seen {
+.message-card.outgoing {
     background-color: var(--color-sent-bubble);
     margin-left: auto;
     border-bottom-right-radius: 4px;
@@ -246,6 +298,7 @@ input[type="password"],
     bottom: 0px;
     opacity: 0.6;
     color: #666;
+    line-height: 1;
 }
 /* Double Ticks (Seen) - Sky Blue Accent */
 .message-card.seen .message-status-ticks {
@@ -260,11 +313,12 @@ input[type="password"],
     border-top: 1px solid #eee;
     box-sizing: border-box;
 }
-#message-input {
+.input-area input[type="text"] {
     flex-grow: 1;
     margin-bottom: 0;
     margin-right: 10px;
     padding: 10px;
+    min-width: 50px; /* Ensure input doesn't collapse */
 }
 .input-area button {
     width: 45px;
@@ -275,7 +329,83 @@ input[type="password"],
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
 }
+/* Last button (Send) should have a margin-right of 0 */
+.input-area button:last-child {
+    margin-right: 0;
+    background-color: var(--color-primary);
+    color: var(--color-surface-light);
+}
+
+/* 7. Call Overlay (Point 6) */
+.call-ui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 2000;
+}
+.call-ui h2 {
+    color: white;
+    margin-bottom: 20px;
+}
+.call-ui video {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+#local-video {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    width: 100px;
+    height: 150px;
+    z-index: 2010;
+    border: 2px solid white;
+}
+#call-controls {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+#call-controls button {
+    width: 120px;
+    padding: 12px;
+}
+
+/* 8. Admin Panel Styling (Point 9) */
+.admin-panel-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.admin-tab-content h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+.admin-tab-content .chat-list-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.admin-tab-content .chat-list-item p {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+}
+.admin-tab-content .chat-list-item div {
+    margin-top: 10px;
+}
+
 
 /* Footer Styling */
 #legal-footer {
@@ -302,6 +432,7 @@ body.dark-mode {
     --color-text-dark: #f0f0f0;
     --color-text-light: #aaaaaa;
     --color-sent-bubble: #054f2c; /* Darker green/blue for sent */
+    --bg-color-hover: #333333; /* Dark hover color */
 }
 body.dark-mode #topbar {
     border-bottom-color: #333;
@@ -310,20 +441,32 @@ body.dark-mode #topbar {
 body.dark-mode .auth-card {
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
 }
+body.dark-mode .chat-list-item {
+    border-bottom-color: #333;
+}
+body.dark-mode .message-card.incoming {
+    background-color: #2a2a2a;
+}
+body.dark-mode .message-header {
+    color: #999;
+}
+
 
 /* ================================================= */
-/* === [CSS ADDITIONS FOR POINT 11: TYPING INDICATOR] === */
+/* === [11. TYPING INDICATOR STYLING] === */
 /* ================================================= */
 
 .typing-status {
     padding: 5px 15px;
     font-size: 0.85em;
-    color: var(--text-color-secondary);
-    background: var(--bg-color-hover);
+    color: var(--text-color-secondary); /* Uses defined variable */
+    background: var(--bg-color-hover); /* Uses defined variable */
     border-radius: 4px;
     margin-top: 5px;
     margin-bottom: 5px; /* Spacing above the input area */
     animation: pulse-dot 1.5s infinite; 
+    align-self: flex-start; /* Aligns indicator to the left */
+    max-width: 90%;
 }
 
 @keyframes pulse-dot {
@@ -333,7 +476,7 @@ body.dark-mode .auth-card {
 }
 
 /* ================================================= */
-/* === [CSS ADDITIONS FOR POINT 12: EMOJI PICKER] === */
+/* === [12. EMOJI PICKER STYLING] === */
 /* ================================================= */
 
 .emoji-picker {
@@ -341,12 +484,12 @@ body.dark-mode .auth-card {
     flex-wrap: wrap;
     justify-content: flex-start;
     position: absolute;
-    bottom: 60px; /* Adjust based on input area height */
+    bottom: 60px; /* Position above input area */
     right: 0;
     width: 280px;
     height: 180px;
-    background: var(--bg-color-card);
-    border: 1px solid var(--border-color);
+    background: var(--bg-color-card); /* Uses defined variable */
+    border: 1px solid var(--border-color); /* Uses defined variable */
     border-radius: 12px;
     padding: 8px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
@@ -368,12 +511,13 @@ body.dark-mode .auth-card {
 }
 
 .emoji-picker button:hover {
-    background: var(--bg-color-hover);
+    background: var(--bg-color-hover); /* Uses defined variable */
 }
 
-/* Style for the emoji/upload buttons in the input area */
+/* General styling for the new buttons in the input area */
 .input-area button {
     padding: 8px 10px;
     font-size: 1.2em; 
     border-radius: 8px;
 }
+
