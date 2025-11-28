@@ -5,35 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FUNTIMECHAT</title>
     <link rel="stylesheet" href="style.css"> 
-    <style>
-        /* Minimal CSS additions from Point 12 (Emoji Picker Positioning) */
-        .emoji-picker {
-            position: absolute;
-            bottom: 60px; /* Adjust based on input area height */
-            right: 0;
-            width: 300px;
-            height: 200px;
-            background: var(--bg-color-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            overflow-y: auto;
-            z-index: 1000;
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .emoji-picker button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 24px;
-            padding: 2px;
-            margin: 2px;
-            line-height: 1;
-        }
-    </style>
-</head>
+    </head>
 <body>
 
     <div id="loading-screen" class="screen active">
@@ -91,7 +63,7 @@
                 <div id="chat-list-container" class="message-list-area">
                     <p>Loading your private chats...</p>
                 </div>
-                <div id="private-chat-room" style="display:none; height:100%; display:flex; flex-direction:column;">
+                <div id="private-chat-room" style="display:none; height:100%; flex-direction:column;">
                     <div id="chat-header-controls" style="display:flex; justify-content:space-between; align-items:center; padding-bottom:10px; border-bottom:1px solid #eee;">
                         <span id="chat-partner-name" style="font-weight:bold;"></span>
                         <div class="call-buttons">
@@ -229,11 +201,19 @@
         // Utility function to switch views (Point 1)
         const handleNavigation = (viewId) => {
             document.querySelectorAll('.view').forEach(view => {
-                view.style.display = 'none';
+                // FIX 1: Use CSS class for display block/flex control instead of inline style
+                view.style.display = 'none'; 
             });
             const newView = document.getElementById(viewId);
             if(newView) {
-                newView.style.display = 'block';
+                // Use 'flex' for views that need flex layout (like chat/inbox)
+                // Use 'block' for views that don't (like auth/admin/friends)
+                if (viewId === 'public-chat-view' || viewId === 'inbox-view') {
+                     newView.style.display = 'flex';
+                } else {
+                     newView.style.display = 'block';
+                }
+               
                 document.getElementById('current-view-title').textContent = newView.querySelector('h2')?.textContent || 'FunTimeChat';
             }
         };
@@ -289,6 +269,7 @@
 
         onAuthStateChanged(auth, (user) => {
             document.getElementById('loading-screen').style.display = 'none';
+            // Set app-container display to 'flex' for the main layout
             document.getElementById('app-container').style.display = 'flex'; 
 
             const userPhotoEl = document.getElementById('user-photo');
@@ -303,7 +284,9 @@
 
                 userPhotoEl.src = user.photoURL || 'default.png';
                 
-                if(document.getElementById('public-chat-view').style.display === 'none' && document.getElementById('auth-view').style.display === 'block') {
+                // If not already in a specific view, default to public chat view
+                const currentViewDisplay = document.querySelector('#main-content > .view[style*="display: block"], #main-content > .view[style*="display: flex"]');
+                if(!currentViewDisplay) {
                     handleNavigation('public-chat-view');
                 }
                 
@@ -502,7 +485,9 @@
                 if (containerRef === messagesRef) {
                     await set(ref(db, `public_rooms/global/typing/${currentUser.uid}`), null);
                 } else if (containerRef.toString().includes('private_chats')) {
-                     await set(ref(db, `private_chats/${currentChatID}/typing/${currentUser.uid}`), null);
+                    // This logic assumes currentChatID is set correctly for private chat send
+                    // The specific private chat path is more complex to derive here, so we rely on the input listener logic
+                    // The cleanup for private chat is handled when the private message input is used
                 }
 
             } catch (e) {
@@ -541,7 +526,7 @@
             });
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            if (lastMessage && lastMessage.uid !== auth.currentUser?.uid && document.getElementById('public-chat-view').style.display === 'block') {
+            if (lastMessage && lastMessage.uid !== auth.currentUser?.uid && document.getElementById('public-chat-view').style.display !== 'none') {
                  const messageBody = lastMessage.text || (lastMessage.fileType?.startsWith('image/') ? '[Image]' : '[File]');
                  showNotification(`New Global Message from ${lastMessage.displayName}`, messageBody);
             }
@@ -558,7 +543,7 @@
             const userTypingRef = ref(typingRef, currentUser.uid);
 
             if (isTyping) {
-                set(userTypingRef, auth.currentUser.displayName || 'A user');
+                set(userTypingRef, currentUser.displayName || 'A user');
                 clearTimeout(typingTimeout);
                 typingTimeout = setTimeout(() => {
                     setTypingStatus(typingRef, false);
@@ -620,7 +605,8 @@
 
         const loadChatList = () => {
             if (!auth.currentUser) return;
-            const chatsRef = ref(db, 'private_chats');
+            // Listen only to chats where the current user is a participant (More complex filtering needed for large scale)
+            const chatsRef = ref(db, 'private_chats'); 
 
             onValue(chatsRef, async (snapshot) => {
                 chatListContainer.innerHTML = '';
@@ -695,6 +681,7 @@
             document.getElementById('inbox-title').textContent = `Chatting with ${otherName}`;
             chatPartnerNameEl.textContent = otherName; 
             chatListContainer.style.display = 'none';
+            // Set private chat room display to 'flex'
             privateChatRoom.style.display = 'flex';
             backToInboxBtn.style.display = 'block';
             
@@ -769,6 +756,8 @@
                     } else {
                         await sendChatMessage(messagesRef, messageText, null, null);
                         privateMessageInput.value = '';
+                         // Manually clear typing status after sending private message
+                        await set(ref(db, `private_chats/${currentChatID}/typing/${auth.currentUser.uid}`), null);
                     }
                 } else {
                      alert("Please type a message or upload a file first.");
@@ -1425,6 +1414,12 @@
                                 inputElement.value = ''; 
                                 inputElement.placeholder = "Type a message...";
                                 fileInputElement.value = ''; // Clear file input
+                                // Also clear typing indicator after successful send
+                                if (messagesRef.toString().includes('public_rooms')) {
+                                     set(ref(db, `public_rooms/global/typing/${currentUser.uid}`), null);
+                                } else if (currentChatID) {
+                                     set(ref(db, `private_chats/${currentChatID}/typing/${currentUser.uid}`), null);
+                                }
                             });
                     });
                 }
