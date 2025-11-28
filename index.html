@@ -1,170 +1,314 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>MH Chat – Planfun</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MH Chat — Planfun (Step 1)</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
-body{background:#f2faff;color:#333}
+  <style>
+    :root{
+      --bg1:#9be7ff; --bg2:#ffc0e6; --card:#ffffff; --muted:#6b7280;
+      --accent-start:#6ec6ff; --accent-end:#ff8ac6; --text:#042033;
+      --radius:12px; --max-w:980px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
+    body{background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--text);-webkit-font-smoothing:antialiased}
 
-/* ===== LOADER ===== */
-#loader{
-position:fixed;top:0;left:0;width:100%;height:100%;
-background:linear-gradient(135deg,#00c6ff,#0072ff);
-display:flex;align-items:center;justify-content:center;
-flex-direction:column;color:#fff;z-index:9999;
-}
-#loader h1{font-size:48px;letter-spacing:3px}
+    /* App container */
+    .app{max-width:var(--max-w);margin:8px auto;padding:10px;min-height:100vh;display:flex;flex-direction:column;gap:10px}
 
-/* ===== AUTH ===== */
-#authScreen{text-align:center;padding:20px;display:none}
-.btn{width:100%;padding:14px;margin:8px 0;border:none;
-background:#00aaff;color:white;font-size:16px;border-radius:0}
+    /* Loader */
+    #loader{position:fixed;left:0;top:0;right:0;bottom:0;background:linear-gradient(135deg,var(--accent-start),var(--accent-end));display:flex;align-items:center;justify-content:center;flex-direction:column;color:#022;z-index:9999}
+    #loader h1{font-size:56px;letter-spacing:6px;margin:0}
+    #loader p{margin-top:8px;color:rgba(2,32,51,0.85)}
 
-/* ===== MAIN APP ===== */
-#app{display:none;height:100vh;flex-direction:column}
-.topbar{background:#00aaff;color:white;padding:15px}
-.content{flex:1;overflow:auto;padding:10px}
-.section{background:white;margin-bottom:10px;padding:10px;border-radius:6px}
-.section h3{color:#00aaff;margin-bottom:6px}
-.bottom-nav{display:flex;border-top:1px solid #ccc}
-.bottom-nav div{flex:1;text-align:center;padding:12px}
-</style>
+    /* Topbar */
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .leftRow{display:flex;align-items:center;gap:12px}
+    .menuBtn{width:44px;height:44px;border-radius:10px;background:#fff;border:1px solid #eee;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700}
+    .logo{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent-start),var(--accent-end));display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--text);font-size:20px}
+    .title{font-weight:800}
+    .subtitle{color:var(--muted);font-size:13px}
+
+    /* Views */
+    .view{display:none}
+    .view.active{display:block}
+
+    .card{background:var(--card);border-radius:16px;padding:12px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
+    body[data-theme="dark"] .card{background:#071526;color:#d6e6ee}
+
+    /* Home */
+    .hero{display:flex;flex-direction:column;gap:8px}
+    .btnPrimary{padding:12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent-start),var(--accent-end));color:#022;font-weight:700;cursor:pointer}
+    .btnGhost{padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff;color:var(--text);cursor:pointer}
+
+    /* Rooms / lists */
+    .list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .list .item{padding:10px;border-radius:10px;background:rgba(255,255,255,0.95);display:flex;justify-content:space-between;align-items:center}
+    body[data-theme="dark"] .list .item{background:rgba(255,255,255,0.03)}
+
+    /* Messages placeholder */
+    .messages{height:50vh;border-radius:12px;padding:10px;overflow:auto;background:linear-gradient(180deg,#fbfeff,#f7fcff)}
+
+    /* bottom nav */
+    .bottomNav{position:fixed;left:10px;right:10px;bottom:10px;background:var(--card);border-radius:12px;padding:8px;display:flex;justify-content:space-around;box-shadow:0 12px 36px rgba(0,0,0,0.12)}
+    .navItem{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:13px;cursor:pointer}
+    .navItem.active{color:var(--text);font-weight:700}
+
+    /* responsive */
+    @media(min-width:980px){
+      .app{padding:20px}
+      .messages{height:64vh}
+      .bottomNav{left:calc(50% - 480px);right:calc(50% - 480px)}
+    }
+  </style>
 </head>
+<body data-theme="light">
 
-<body>
+  <!-- Loader -->
+  <div id="loader">
+    <h1>MH</h1>
+    <p>Planfun — Loading interface…</p>
+  </div>
 
-<!-- ================= LOADING SCREEN ================= -->
-<div id="loader">
-<h1>MH</h1>
-<p>Loading Planfun...</p>
-</div>
+  <div class="app" id="app">
 
-<!-- ================= 1. ACCOUNT SYSTEM ================= -->
-<div id="authScreen" class="section">
-<h3>1. Account System</h3>
-<button class="btn">Login with Email</button>
-<button class="btn">Google Login</button>
-<button class="btn">Guest Login</button>
-</div>
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="leftRow">
+        <div class="menuBtn" id="menuToggle">☰</div>
+        <div class="logo" id="logoMH">MH</div>
+        <div>
+          <div class="title">FunTimeChat</div>
+          <div class="subtitle">Public · Rooms · Private PMs · Calls</div>
+        </div>
+      </div>
+      <div id="userArea"></div>
+    </div>
 
-<!-- ================= MAIN APP ================= -->
-<div id="app">
+    <!-- ===== VIEWS (placeholders for step-by-step features) ===== -->
 
-<div class="topbar">MH Chat – Planfun</div>
+    <!-- 1) AUTH VIEW (Show on not-logged-in) -->
+    <div id="view-auth" class="view active card">
+      <h3>Sign in to MH Chat</h3>
+      <p class="small">Use Google, Email or continue as Guest (we will wire auth in next steps).</p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btnPrimary" id="btnGoogle">Sign in with Google</button>
+        <button class="btnGhost" id="btnGuest">Continue as Guest</button>
+      </div>
 
-<div class="content">
+      <div style="margin-top:12px;display:flex;gap:6px">
+        <input id="emailInput" placeholder="Email" style="flex:1;padding:10px;border-radius:8px;border:1px solid #eee" />
+        <input id="passInput" placeholder="Password" type="password" style="flex:1;padding:10px;border-radius:8px;border:1px solid #eee" />
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btnPrimary" id="btnSignup">Sign up</button>
+        <button class="btnGhost" id="btnSignin">Sign in</button>
+      </div>
+    </div>
 
-<!-- ================= 2. DESIGN & UI ================= -->
-<div class="section">
-<h3>2. Design & UI</h3>
-<p>Theme: White + Sky Blue, Square Buttons, App Style Layout</p>
-</div>
+    <!-- 2) HOME VIEW (Design & UI / Random) -->
+    <div id="view-home" class="view">
+      <div class="card hero">
+        <h3>Random Chat (Text only)</h3>
+        <p class="small">Connect instantly with strangers. Skip anytime.</p>
+        <div style="display:flex;gap:8px">
+          <button id="startRandom" class="btnPrimary">Start Random</button>
+          <button id="stopRandom" class="btnGhost">Stop</button>
+        </div>
+      </div>
 
-<!-- ================= 3. PUBLIC CHAT ================= -->
-<div class="section" id="publicChat">
-<h3>3. Public Chat</h3>
-<div id="publicMessages"></div>
-<input type="text" placeholder="Type public message...">
-</div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800">Featured Rooms</div>
+          <div><button id="createRoomBtn" class="btnGhost">+ Create</button></div>
+        </div>
+        <div id="roomsList" class="list small"></div>
+      </div>
+    </div>
 
-<!-- ================= 4. PRIVATE CHAT ================= -->
-<div class="section" id="privateChat">
-<h3>4. Private Chat (Inbox Style)</h3>
-<div id="pmList"></div>
-</div>
+    <!-- 3) ROOMS VIEW (Public chat) -->
+    <div id="view-rooms" class="view">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800" id="roomsTitle">Rooms</div>
+          <div class="small" id="roomsCount">0 rooms</div>
+        </div>
+        <div id="roomsAll" class="list" style="margin-top:8px"></div>
+      </div>
+    </div>
 
-<!-- ================= 5. RANDOM CHAT ================= -->
-<div class="section" id="randomChat">
-<h3>5. Random Chat</h3>
-<button class="btn">Start Random Chat</button>
-<button class="btn">Next</button>
-</div>
+    <!-- 4) MESSAGES / INBOX -->
+    <div id="view-inbox" class="view">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800">Inbox</div>
+          <div class="small">Private messages</div>
+        </div>
+        <div id="inboxList" class="list" style="margin-top:8px"></div>
+      </div>
+    </div>
 
-<!-- ================= 6. AUDIO / VIDEO CALL ================= -->
-<div class="section">
-<h3>6. Audio / Video Call</h3>
-<button class="btn">Audio Call</button>
-<button class="btn">Video Call</button>
-</div>
+    <!-- 5) PM Chat -->
+    <div id="view-pm" class="view">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800" id="pmTitle">Private Chat</div>
+          <div>
+            <button id="pmAudio" class="btnGhost">📞</button>
+            <button id="pmVideo" class="btnGhost">📹</button>
+          </div>
+        </div>
+      </div>
 
-<!-- ================= 7. FRIENDS SYSTEM ================= -->
-<div class="section">
-<h3>7. Friends System</h3>
-<button class="btn">Send Friend Request</button>
-<button class="btn">Friends List</button>
-</div>
+      <div id="pmMessages" class="messages card"></div>
 
-<!-- ================= 8. SAFETY & CONTROL ================= -->
-<div class="section">
-<h3>8. Safety & Control</h3>
-<button class="btn">Block</button>
-<button class="btn">Report</button>
-<button class="btn">Clear Chat</button>
-</div>
+      <div class="sendRow card" style="display:flex;align-items:center;gap:8px">
+        <input id="pmInput" type="text" placeholder="Type message..." />
+        <button id="pmSend" class="btnPrimary">Send</button>
+      </div>
+    </div>
 
-<!-- ================= 9. ADMIN PANEL ================= -->
-<div class="section">
-<h3>9. Admin Panel</h3>
-<button class="btn">Ban User</button>
-<button class="btn">Delete Message</button>
-<button class="btn">Create Room</button>
-</div>
+    <!-- 6) PROFILE & ADMIN -->
+    <div id="view-profile" class="view">
+      <div class="card" style="display:flex;gap:12px;align-items:center">
+        <div class="logo" id="myAvatar">MH</div>
+        <div>
+          <div id="myName" style="font-weight:800">Guest</div>
+          <div id="myEmail" class="small">Not logged</div>
+          <div style="height:8px"></div>
+          <input id="displayName" placeholder="Display name" style="padding:8px;border-radius:8px;border:1px solid #eee" />
+          <div style="height:8px"></div>
+          <button id="saveProfile" class="btnGhost">Save</button>
+        </div>
+      </div>
 
-<!-- ================= 10. DATABASE (FIREBASE) ================= -->
-<div class="section">
-<h3>10. Database (Firebase)</h3>
-<p>Realtime DB + Storage + Auth Ready</p>
-</div>
+      <div class="card">
+        <h3>Admin Controls</h3>
+        <div id="adminPanel" class="small">(Will be visible to owner/admin)</div>
+      </div>
 
-<!-- ================= 11. NOTIFICATION & SOUND ================= -->
-<div class="section">
-<h3>11. Notification & Sound</h3>
-<p>Message Sound, Call Ringtone, Browser Notification</p>
-</div>
+      <div class="card">
+        <h3>Settings</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <label class="small">Dark mode</label>
+          <button id="toggleTheme" class="btnGhost">Toggle</button>
+        </div>
+      </div>
+    </div>
 
-<!-- ================= 12. LEGAL PAGES ================= -->
-<div class="section">
-<h3>12. Legal Pages</h3>
-<p>Privacy Policy | Terms | Report Abuse | DMCA</p>
-</div>
+  </div> <!-- end app -->
 
-</div>
+  <!-- Bottom Navigation -->
+  <div class="bottomNav" role="navigation" aria-label="Main navigation">
+    <div class="navItem active" data-view="view-home">🏠<div class="small">Home</div></div>
+    <div class="navItem" data-view="view-rooms">💬<div class="small">Rooms</div></div>
+    <div class="navItem" data-view="view-inbox">📨<div class="small">Inbox</div></div>
+    <div class="navItem" data-view="view-profile">⚙️<div class="small">Profile</div></div>
+  </div>
 
-<div class="bottom-nav">
-<div>Chat</div>
-<div>Random</div>
-<div>Friends</div>
-<div>Profile</div>
-</div>
+<script>
+  // ========== INITIAL UI BOOTSTRAP ==========
+  // Hide loader after short delay, show auth view by default
+  setTimeout(()=> {
+    document.getElementById('loader').style.display = 'none';
+    // show app container
+    document.getElementById('app').style.display = 'block';
+    // show auth view initially (not logged-in)
+    showView('view-auth');
+  }, 900);
 
-</div>
+  // View toggling
+  const navItems = document.querySelectorAll('.navItem');
+  navItems.forEach(n=>{
+    n.addEventListener('click', ()=>{
+      navItems.forEach(x=>x.classList.remove('active'));
+      n.classList.add('active');
+      const v = n.dataset.view;
+      showView(v);
+    });
+  });
 
-<!-- ================= FIREBASE CONFIG ================= -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  function showView(id){
+    document.querySelectorAll('.view').forEach(v=> v.classList.remove('active'));
+    const el = document.getElementById(id);
+    if(el) el.classList.add('active');
+    // scroll to top for better UX
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
 
-const firebaseConfig = {
-apiKey: "PASTE_HERE",
-authDomain: "PASTE_HERE",
-databaseURL: "PASTE_HERE",
-projectId: "PASTE_HERE",
-storageBucket: "PASTE_HERE",
-messagingSenderId: "PASTE_HERE",
-appId: "PASTE_HERE"
-};
+  // Theme toggle (visual only for now)
+  document.getElementById('toggleTheme').onclick = () => {
+    const root = document.body;
+    const current = root.getAttribute('data-theme') || 'light';
+    root.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+  };
 
-const app = initializeApp(firebaseConfig);
+  // Placeholder handlers for auth buttons (we'll wire firebase next)
+  document.getElementById('btnGuest').onclick = ()=> alert('Guest login will be wired in next step');
+  document.getElementById('btnGoogle').onclick = ()=> alert('Google login will be wired in next step');
+  document.getElementById('btnSignup').onclick = ()=> alert('Signup will be wired in next step');
+  document.getElementById('btnSignin').onclick = ()=> alert('Signin will be wired in next step');
 
-// AUTO LOADER
-setTimeout(()=>{
-document.getElementById("loader").style.display="none";
-document.getElementById("authScreen").style.display="block";
-},2000);
+  // Room create placeholder
+  document.getElementById('createRoomBtn').onclick = ()=> {
+    const name = prompt('Room name (demo)');
+    if(name) {
+      const list = document.getElementById('roomsList');
+      const node = document.createElement('div');
+      node.className = 'item';
+      node.innerHTML = `<div>${escapeHtml(name)}</div><div><button class="roomBtn" onclick="joinRoomDemo('${escapeHtml(name)}')">Join</button></div>`;
+      document.getElementById('roomsAll').prepend(node);
+      list.prepend(node.cloneNode(true));
+      document.getElementById('roomsCount').innerText = document.getElementById('roomsAll').children.length + ' rooms';
+    }
+  };
+
+  function joinRoomDemo(name){
+    document.getElementById('roomTitle').innerText = name;
+    showView('view-rooms');
+  }
+
+  // start Random placeholder
+  document.getElementById('startRandom').onclick = ()=> alert('Random match will be implemented in next step');
+  document.getElementById('stopRandom').onclick = ()=> alert('Random stop');
+
+  // PM send placeholder
+  document.getElementById('pmSend').onclick = ()=> {
+    const v = document.getElementById('pmInput').value.trim();
+    if(!v) return;
+    const area = document.getElementById('pmMessages');
+    const d = document.createElement('div');
+    d.className = 'msg me';
+    d.innerText = 'You: ' + v;
+    area.appendChild(d);
+    document.getElementById('pmInput').value = '';
+    area.scrollTop = area.scrollHeight;
+  };
+
+  // helper escape
+  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // joinRoom demo attach for list items created earlier
+  window.joinRoomDemo = joinRoomDemo;
+
+  // simple inbox demo: add sample
+  (function seedInbox(){
+    const inbox = document.getElementById('inboxList');
+    const node = document.createElement('div');
+    node.className='item';
+    node.innerHTML = `<div>user_123</div><div><button class="roomBtn" onclick="openPmDemo('user_123')">Open</button></div>`;
+    inbox.appendChild(node);
+  })();
+
+  function openPmDemo(uid){
+    document.getElementById('pmTitle').innerText = 'Chat: '+uid;
+    showView('view-pm');
+  }
 </script>
 
 </body>
