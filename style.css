@@ -310,3 +310,70 @@ body.dark-mode #topbar {
 body.dark-mode .auth-card {
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
 }
+
+/* ================================================= */
+/* === [CSS ADDITIONS FOR POINT 11: TYPING INDICATOR] === */
+/* ================================================= */
+
+.typing-status {
+    padding: 5px 15px;
+    font-size: 0.85em;
+    color: var(--text-color-secondary);
+    background: var(--bg-color-hover);
+    border-radius: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px; /* Spacing above the input area */
+    animation: pulse-dot 1.5s infinite; 
+}
+
+@keyframes pulse-dot {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+/* ================================================= */
+/* === [CSS ADDITIONS FOR POINT 12: EMOJI PICKER] === */
+/* ================================================= */
+
+.emoji-picker {
+    display: flex; 
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    position: absolute;
+    bottom: 60px; /* Adjust based on input area height */
+    right: 0;
+    width: 280px;
+    height: 180px;
+    background: var(--bg-color-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    overflow-y: scroll;
+    z-index: 1000; 
+    gap: 2px;
+}
+
+.emoji-picker button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 26px; 
+    padding: 3px;
+    margin: 1px;
+    line-height: 1;
+    transition: background 0.1s;
+    border-radius: 4px;
+}
+
+.emoji-picker button:hover {
+    background: var(--bg-color-hover);
+}
+
+/* Style for the emoji/upload buttons in the input area */
+.input-area button {
+    padding: 8px 10px;
+    font-size: 1.2em; 
+    border-radius: 8px;
+}
