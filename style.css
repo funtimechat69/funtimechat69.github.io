@@ -1,0 +1,228 @@
+/*
+ * FUNTIMECHAT - style.css
+ * Theme: White + Sky Blue + Mobile-First Responsive Layout
+ */
+
+:root {
+    /* Define Theme Colors */
+    --color-primary: #00bfff; /* Deep Sky Blue for Accents */
+    --color-secondary: #007bff; /* Slightly darker blue */
+    --color-background-light: #f4f7f9; /* Light background */
+    --color-surface-light: #ffffff; /* Card/Surface background */
+    --color-text-dark: #333333;
+    --color-success: #28a745;
+    --color-error: #dc3545;
+}
+
+/* 1. Global Reset and Mobile Layout (Mobile-first design) */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-background-light);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: var(--color-text-dark);
+    /* Adjust padding to make space for fixed top/bottom bars */
+    padding-top: 60px; /* Space for Topbar */
+    padding-bottom: 60px; /* Space for Bottom Nav */
+}
+
+/* Loading Screen */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-surface-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.logo-pulse {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--color-primary);
+    border: 3px solid var(--color-primary);
+    border-radius: 50%;
+    padding: 10px 15px;
+    animation: pulse 1s infinite alternate; /* Animated logo pulse */
+}
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.7; }
+    100% { transform: scale(1.1); opacity: 1; }
+}
+
+/* 2. Top Bar (Fixed) */
+#topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: var(--color-surface-light);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    z-index: 50;
+}
+#topbar h1 { font-size: 1.2rem; margin: 0; }
+#topbar .logo { 
+    font-weight: bold; 
+    color: var(--color-primary);
+    margin-right: 10px;
+}
+.profile-pic {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px;
+}
+
+/* 3. Bottom Navigation (Fixed) */
+#bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: var(--color-surface-light);
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 50;
+}
+#bottom-nav button {
+    flex-grow: 1;
+    background: none;
+    border: none;
+    color: var(--color-text-dark);
+    font-size: 0.9rem;
+    padding: 10px 0;
+    cursor: pointer;
+}
+#bottom-nav button:hover {
+    color: var(--color-primary);
+}
+
+/* 4. Square Type-B Button Style (Consistent) */
+.square-btn {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    font-weight: 600;
+    border-radius: 4px; /* Square Type-B style */
+    text-align: center;
+    display: block; /* Make buttons take full width in auth card */
+    width: 100%;
+    margin-bottom: 10px;
+}
+.square-btn.type-b {
+    background-color: var(--color-primary);
+    color: var(--color-surface-light);
+    border: none;
+}
+.square-btn.type-b:hover {
+    background-color: var(--color-secondary);
+    transform: translateY(-1px);
+}
+
+/* 5. Main Content Area & Auth View */
+#main-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    width: 100%;
+    padding: 15px;
+}
+.auth-card {
+    background-color: var(--color-surface-light);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    max-width: 400px;
+    margin: 30px auto;
+}
+input[type="email"],
+input[type="password"],
+#message-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* 6. Chat View and Messages */
+#public-chat-view {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 120px); /* Full height minus top/bottom bars */
+    overflow: hidden;
+    padding: 0; /* Remove padding from container to use full width */
+}
+.message-list-area {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px 15px; /* Add padding here */
+}
+.message-card {
+    max-width: 80%;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 18px;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.message-card.received {
+    background-color: var(--color-surface-light);
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+}
+.message-card.delivered,
+.message-card.seen {
+    background-color: #e1ffc7; /* Light Green for sent messages */
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+/* Seen Ticks Styling */
+.message-status-ticks {
+    font-size: 0.7rem;
+    position: absolute;
+    right: 10px;
+    bottom: 2px;
+    opacity: 0.8;
+}
+/* Double Ticks (Seen) - Sky Blue Accent */
+.message-card.seen .message-status-ticks {
+    color: var(--color-primary); /* Blue for seen */
+    opacity: 1;
+}
+
+.input-area {
+    display: flex;
+    padding: 10px 15px;
+    background-color: var(--color-surface-light);
+    border-top: 1px solid #eee;
+}
+#message-input {
+    flex-grow: 1;
+    margin-bottom: 0;
+    margin-right: 10px;
+}
+.input-area button {
+    width: 45px;
+    height: 45px;
+    font-size: 1.2rem;
+    margin: 0 5px;
+    padding: 0;
+}
