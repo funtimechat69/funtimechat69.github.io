@@ -56,7 +56,11 @@
             </div>
 
             <div id="inbox-view" class="view" style="display:none;"><h2>Private Messages (Inbox)</h2><p>Feature implementation pending...</p></div>
-            <div id="random-chat-view" class="view" style="display:none;"><h2>Random Chat</h2><p>Feature implementation pending...</p></div>
+            <div id="random-chat-view" class="view" style="display:none;">
+                <h2>Random Chat</h2>
+                <p>Click 'Start Match' to find a stranger!</p>
+                <button id="start-random-match-btn" class="square-btn type-b">Start Match</button>
+            </div>
             <div id="friends-view" class="view" style="display:none;"><h2>Friends & Requests</h2><p>Feature implementation pending...</p></div>
             <div id="admin-view" class="view" style="display:none;"><h2>Admin Panel</h2><p>Feature implementation pending...</p></div>
             
@@ -97,7 +101,7 @@
             appId: "1:559638056734:web:9329d2b561b6fab106830f"
         };
 
-        // 🚨 STEP 2: Necessary Firebase SDK Imports
+        // 🚨 STEP 2: Necessary Firebase SDK Imports (ADDED 'remove' for Random Chat)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { 
             getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, 
@@ -105,7 +109,7 @@
             signOut, signInAnonymously, updateProfile 
         } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         import { 
-            getDatabase, ref, push, onValue, serverTimestamp, query, limitToLast, set
+            getDatabase, ref, push, onValue, serverTimestamp, query, limitToLast, set, remove, off
         } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
         // Initialize Firebase Services
@@ -321,7 +325,119 @@
             });
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
+        
+        // ***************************************************************
+        // 5. RANDOM CHAT SYSTEM (ACTIVE LOGIC)
+        // ***************************************************************
 
+        const randomChatBtn = document.querySelector('#bottom-nav button[data-view="random-chat-view"]');
+        const randomChatView = document.getElementById('random-chat-view');
+        let currentMatchListener = null; // To hold the listener for the current user's match
+
+        // 💡 NEW FUNCTION: नया प्राइवेट चैट रूम बनाना
+        const createNewRandomChat = (user1Uid, user2Uid) => {
+            // चैट ID बनाने के लिए दोनों UIDs को सॉर्ट करके जोड़ें
+            const chatID = [user1Uid, user2Uid].sort().join('_');
+            const chatRef = ref(db, `private_chats/${chatID}`);
+
+            // चैट मेटाडेटा को डेटाबेस में सेव करें
+            set(chatRef, {
+                participants: {
+                    [user1Uid]: { displayName: auth.currentUser.displayName || 'User' },
+                    [user2Uid]: { displayName: 'Stranger' } 
+                },
+                status: 'active',
+                createdAt: serverTimestamp()
+            })
+            .then(() => {
+                alert(`Match Found! Chat ID: ${chatID}. (Next step: implement Private Chat View)`);
+                // Match Found होने पर, Random View को अपडेट करें और Public Chat View पर जाएँ
+                randomChatView.innerHTML = `<h2>Random Chat</h2><p>Match Found! Start chatting in your Inbox view.</p><button id="start-random-match-btn" class="square-btn type-b">Start New Match</button>`;
+                handleNavigation('inbox-view'); // अब Inbox पर रीडायरेक्ट करते हैं
+            })
+            .catch(error => console.error("Error creating chat:", error));
+            
+            // Queue से दोनों यूज़र्स को हटा दें 
+            remove(ref(db, `matchQueue/${user1Uid}`));
+            remove(ref(db, `matchQueue/${user2Uid}`));
+        };
+
+
+        // 💡 NEW FUNCTION: मैच Queue में यूज़र को डालना और मैच ढूँढना
+        const startRandomMatchmaking = async () => {
+            const currentUser = auth.currentUser;
+            if (!currentUser || currentUser.isAnonymous) {
+                alert("Please sign in with a permanent account to start Random Chat.");
+                return;
+            }
+
+            // 1. Loading Screen दिखाएँ और 'Random Chat' व्यू पर जाएँ
+            randomChatView.innerHTML = `<h2>Searching for a Match...</h2><p>Please wait while we connect you with a stranger.</p><button id="cancel-match-btn" class="square-btn type-b">Cancel Matchmaking</button>`;
+            handleNavigation('random-chat-view');
+
+            const queueRef = ref(db, 'matchQueue');
+
+            // 2. Queue में यूज़र को जोड़ें
+            await set(ref(db, `matchQueue/${currentUser.uid}`), {
+                displayName: currentUser.displayName || 'Stranger',
+                timestamp: serverTimestamp()
+            });
+            
+            // Cancel बटन लॉजिक
+            document.getElementById('cancel-match-btn').addEventListener('click', () => {
+                remove(ref(db, `matchQueue/${currentUser.uid}`));
+                if (currentMatchListener) {
+                    off(currentMatchListener); // Listener बंद करें
+                }
+                randomChatView.innerHTML = `<h2>Random Chat</h2><p>Matchmaking cancelled. Click 'Start Match' to try again.</p><button id="start-random-match-btn" class="square-btn type-b">Start Match</button>`;
+                // Cancel के बाद Start Match बटन पर फिर से listener जोड़ें
+                document.getElementById('start-random-match-btn').addEventListener('click', startRandomMatchmaking);
+            });
+
+            // 3. मैच ढूँढने के लिए Queue को पढ़ें
+            const findMatch = onValue(queueRef, (snapshot) => {
+                const queue = snapshot.val();
+                if (!queue) return;
+                
+                const uidsInQueue = Object.keys(queue);
+                
+                // चेक करें कि Queue में खुद के अलावा कोई और यूज़र है या नहीं
+                if (uidsInQueue.length >= 2) {
+                    // Random Match Logic: पहले यूज़र को छोड़ कर बाकी में से ढूँढे
+                    const potentialMatchUid = uidsInQueue.find(uid => uid !== currentUser.uid);
+
+                    if (potentialMatchUid) {
+                        // मैच मिल गया! listener को बंद करें 
+                        off(findMatch);
+                        
+                        // 4. नया चैट रूम बनाएँ
+                        createNewRandomChat(currentUser.uid, potentialMatchUid);
+                    }
+                }
+            });
+
+            currentMatchListener = findMatch; // listener को सेव करें ताकि बाद में बंद कर सकें (cancel बटन पर)
+        };
+
+        // 5. Bottom Nav Button और Start Match बटन पर Listener जोड़ें
+        randomChatBtn.addEventListener('click', () => {
+            if (auth.currentUser) {
+                // सीधे Matchmaking शुरू करें जब Random पर क्लिक हो
+                startRandomMatchmaking();
+            } else {
+                alert("Please sign in to use Random Chat.");
+                handleNavigation('auth-view');
+            }
+        });
+
+        // 6. Random Chat View के अंदर Placeholder बटन पर Listener जोड़ें (जब Match Cancel हो या पहली बार View हो)
+        // यह सुनिश्चित करता है कि 'Start Match' बटन हमेशा काम करे
+        document.getElementById('random-chat-view').addEventListener('click', (e) => {
+            if (e.target.id === 'start-random-match-btn') {
+                startRandomMatchmaking();
+            }
+        });
+        
         // ***************************************************************
         // UI AND NAVIGATION (Point 1)
         // ***************************************************************
@@ -343,13 +459,10 @@
         });
 
         // ***************************************************************
-        // PLACEHOLDERS FOR ADVANCED FEATURES (4, 5, 6, 7, 8, 9, 10)
+        // PLACEHOLDERS FOR ADVANCED FEATURES (4, 6, 7, 8, 9, 10)
         // ***************************************************************
-
-        // Example: Random Chat Match Button Placeholder
-        document.getElementById('random-chat-view').querySelector('button[id="start-random-match-btn"]').addEventListener('click', () => {
-            alert("Random Match Logic needed!");
-        });
+        
+        // Note: Random Chat (Point 5) logic is now fully implemented above.
 
     </script>
 </body>
