@@ -49,8 +49,6 @@
                 <div id="public-typing-indicator" class="typing-status" style="display:none;"></div>
                 <div class="input-area" style="position:relative;">
                     <input type="text" id="message-input" placeholder="Type a message...">
-                    <input type="file" id="public-file-upload-input" style="display:none;">
-                    <button id="public-upload-file-btn">📎</button>
                     <button id="public-emoji-btn">😊</button> 
                     <button id="send-message-btn" class="square-btn type-b">➡️</button>
                     <div id="public-emoji-picker" class="emoji-picker" style="display:none;"></div>
@@ -75,8 +73,6 @@
                     <div id="private-typing-indicator" class="typing-status" style="display:none;"></div>
                     <div class="input-area" style="position:relative;">
                         <input type="text" id="private-message-input" placeholder="Type private message...">
-                        <input type="file" id="private-file-upload-input" style="display:none;">
-                        <button id="private-upload-file-btn">📎</button>
                         <button id="private-emoji-btn">😊</button>
                         <button id="private-send-message-btn" class="square-btn type-b">➡️</button>
                         <div id="private-emoji-picker" class="emoji-picker" style="display:none;"></div>
@@ -169,7 +165,7 @@
             authDomain: "funtimechat69-39947.firebaseapp.com",
             databaseURL: "https://funtimechat69-39947-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "funtimechat69-39947",
-            storageBucket: "funtimechat69-39947.appspot.com", 
+            storageBucket: "funtimechat69-39947.appspot.com", // This is not used, but kept for config integrity
             messagingSenderId: "559638056734",
             appId: "1:559638056734:web:9329d2b561b6fab106830f"
         };
@@ -184,15 +180,13 @@
         import { 
             getDatabase, ref, push, onValue, serverTimestamp, query, limitToLast, set, remove, off, get, update
         } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-        import { 
-            getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL 
-        } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+        // Firebase Storage imports are removed as requested.
 
         // Initialize Firebase Services
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const storage = getStorage(app);
+        // const storage = getStorage(app); // Storage initialization removed
 
         // Global variables
         let currentUserIsAdmin = false;
@@ -201,13 +195,10 @@
         // Utility function to switch views (Point 1)
         const handleNavigation = (viewId) => {
             document.querySelectorAll('.view').forEach(view => {
-                // FIX 1: Use CSS class for display block/flex control instead of inline style
                 view.style.display = 'none'; 
             });
             const newView = document.getElementById(viewId);
             if(newView) {
-                // Use 'flex' for views that need flex layout (like chat/inbox)
-                // Use 'block' for views that don't (like auth/admin/friends)
                 if (viewId === 'public-chat-view' || viewId === 'inbox-view') {
                      newView.style.display = 'flex';
                 } else {
@@ -269,7 +260,6 @@
 
         onAuthStateChanged(auth, (user) => {
             document.getElementById('loading-screen').style.display = 'none';
-            // Set app-container display to 'flex' for the main layout
             document.getElementById('app-container').style.display = 'flex'; 
 
             const userPhotoEl = document.getElementById('user-photo');
@@ -284,7 +274,6 @@
 
                 userPhotoEl.src = user.photoURL || 'default.png';
                 
-                // If not already in a specific view, default to public chat view
                 const currentViewDisplay = document.querySelector('#main-content > .view[style*="display: block"], #main-content > .view[style*="display: flex"]');
                 if(!currentViewDisplay) {
                     handleNavigation('public-chat-view');
@@ -377,8 +366,8 @@
         const messagesContainer = document.getElementById('messages-container');
         const messageInput = document.getElementById('message-input');
         const sendMessageBtn = document.getElementById('send-message-btn');
-        const publicFileUploadInput = document.getElementById('public-file-upload-input');
-        const publicUploadFileBtn = document.getElementById('public-upload-file-btn');
+        // const publicFileUploadInput = document.getElementById('public-file-upload-input'); // Removed
+        // const publicUploadFileBtn = document.getElementById('public-upload-file-btn'); // Removed
         const publicTypingIndicator = document.getElementById('public-typing-indicator'); // Point 11
         const messagesRef = ref(db, 'public_rooms/global/messages');
         const typingRef = ref(db, 'public_rooms/global/typing'); // Point 11
@@ -421,16 +410,7 @@
             messageElement.className = `message-card ${seenStatus} ${message.uid === currentUserUid ? 'outgoing' : 'incoming'}`; 
             
             let contentHTML = '';
-            // Point 10: Media Rendering
-            if (message.fileURL && message.fileType) {
-                if (message.fileType.startsWith('image/')) {
-                    contentHTML = `<img src="${message.fileURL}" alt="Shared Image" style="max-width: 100%; height: auto; border-radius: 8px;">`;
-                } else if (message.fileType.startsWith('video/')) {
-                    contentHTML = `<video src="${message.fileURL}" controls style="max-width: 100%; height: auto; border-radius: 8px;"></video>`;
-                } else {
-                    contentHTML = `<a href="${message.fileURL}" target="_blank" style="color: var(--link-color);">⬇️ Download File: ${message.text || message.fileType}</a>`;
-                }
-            }
+            // Media rendering logic removed (message.fileURL check removed)
             
             if (message.text) {
                 // Point 12: Simple Emoji Text Conversion
@@ -442,7 +422,7 @@
                     .replace(/<3/g, '❤️');
                     
                 contentHTML += `<p class="message-text">${textWithEmojis}</p>`;
-            } else if (!message.fileURL) {
+            } else {
                 contentHTML += `<p class="message-text">[Empty Message]</p>`;
             }
 
@@ -460,9 +440,9 @@
             container.appendChild(messageElement);
         };
         
-        const sendChatMessage = async (containerRef, messageText, fileURL, fileType) => {
+        const sendChatMessage = async (containerRef, messageText) => {
             const currentUser = auth.currentUser;
-            if (!currentUser || (!messageText.trim() && !fileURL)) {
+            if (!currentUser || !messageText.trim()) { // Simplified message check
                 alert("Message cannot be empty.");
                 return;
             }
@@ -475,8 +455,7 @@
                     uid: currentUser.uid,
                     displayName: currentUser.displayName || 'Guest',
                     text: messageText,
-                    fileURL: fileURL || null,
-                    fileType: fileType || null,
+                    // fileURL and fileType removed
                     timestamp: serverTimestamp(),
                     reads: initialReads, 
                 });
@@ -484,11 +463,8 @@
                 // Point 11: Reset typing status after sending message
                 if (containerRef === messagesRef) {
                     await set(ref(db, `public_rooms/global/typing/${currentUser.uid}`), null);
-                } else if (containerRef.toString().includes('private_chats')) {
-                    // This logic assumes currentChatID is set correctly for private chat send
-                    // The specific private chat path is more complex to derive here, so we rely on the input listener logic
-                    // The cleanup for private chat is handled when the private message input is used
-                }
+                } 
+                // Private chat typing cleanup is handled outside this function
 
             } catch (e) {
                 console.error("Error sending message: ", e);
@@ -497,17 +473,11 @@
 
         sendMessageBtn.addEventListener('click', async () => {
             const messageText = messageInput.value.trim();
-            if (messageText || publicFileUploadInput.files.length > 0) { // Check if text or file exists
-                if (publicFileUploadInput.files.length > 0) {
-                    // File upload logic will handle the sendChatMessage internally
-                    // We only clear the input here if no text was provided, otherwise the file input handler should clear it
-                    if(!messageText) messageInput.value = '';
-                } else {
-                    await sendChatMessage(messagesRef, messageText, null, null);
-                    messageInput.value = '';
-                }
+            if (messageText) { // File check removed
+                await sendChatMessage(messagesRef, messageText);
+                messageInput.value = '';
             } else {
-                alert("Please type a message or upload a file first.");
+                alert("Please type a message first.");
             }
         });
 
@@ -527,7 +497,7 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
             if (lastMessage && lastMessage.uid !== auth.currentUser?.uid && document.getElementById('public-chat-view').style.display !== 'none') {
-                 const messageBody = lastMessage.text || (lastMessage.fileType?.startsWith('image/') ? '[Image]' : '[File]');
+                 const messageBody = lastMessage.text || '[New Message]'; // File reference removed
                  showNotification(`New Global Message from ${lastMessage.displayName}`, messageBody);
             }
         });
@@ -591,8 +561,8 @@
         const privateMessagesContainer = document.getElementById('private-messages-container');
         const privateMessageInput = document.getElementById('private-message-input');
         const privateSendMessageBtn = document.getElementById('private-send-message-btn');
-        const privateFileUploadInput = document.getElementById('private-file-upload-input');
-        const privateUploadFileBtn = document.getElementById('private-upload-file-btn');
+        // const privateFileUploadInput = document.getElementById('private-file-upload-input'); // Removed
+        // const privateUploadFileBtn = document.getElementById('private-upload-file-btn'); // Removed
         const privateTypingIndicator = document.getElementById('private-typing-indicator'); // Point 11
         const backToInboxBtn = document.getElementById('back-to-inbox-list');
         const privateChatRoom = document.getElementById('private-chat-room');
@@ -605,7 +575,6 @@
 
         const loadChatList = () => {
             if (!auth.currentUser) return;
-            // Listen only to chats where the current user is a participant (More complex filtering needed for large scale)
             const chatsRef = ref(db, 'private_chats'); 
 
             onValue(chatsRef, async (snapshot) => {
@@ -623,20 +592,15 @@
                         const otherUid = Object.keys(chat.participants).find(uid => uid !== auth.currentUser.uid);
                         const otherDisplayName = chat.participants[otherUid]?.displayName || 'Stranger';
                         
-                        // Use a promise to load the last message asynchronously
                         const chatPromise = get(query(ref(db, `private_chats/${chatID}/messages`), limitToLast(1)))
                             .then(lastMessageSnapshot => {
                                 let lastMessageText = 'Start chatting!';
-                                let lastMessageTimestamp = chat.createdAt || 0; // Fallback to chat creation time
+                                let lastMessageTimestamp = chat.createdAt || 0; 
                                 
                                 lastMessageSnapshot.forEach(msgSnap => {
                                     const msg = msgSnap.val();
                                     lastMessageTimestamp = msg.timestamp;
-                                    if (msg.fileURL) {
-                                        lastMessageText = msg.fileType?.startsWith('image/') ? '📷 Image' : (msg.fileType?.startsWith('video/') ? '📹 Video' : '📎 File');
-                                    } else {
-                                        lastMessageText = msg.text;
-                                    }
+                                    lastMessageText = msg.text; // Simplified to text only
                                 });
 
                                 return { chatID, otherUid, otherDisplayName, lastMessageText, lastMessageTimestamp };
@@ -645,9 +609,7 @@
                     }
                 });
                 
-                // Wait for all last message promises to resolve
                 Promise.all(chatPromises).then(chatsData => {
-                    // Sort chats by last message timestamp (most recent first)
                     chatsData.sort((a, b) => (b.lastMessageTimestamp || 0) - (a.lastMessageTimestamp || 0));
 
                     if (chatsData.length > 0) {
@@ -681,13 +643,11 @@
             document.getElementById('inbox-title').textContent = `Chatting with ${otherName}`;
             chatPartnerNameEl.textContent = otherName; 
             chatListContainer.style.display = 'none';
-            // Set private chat room display to 'flex'
             privateChatRoom.style.display = 'flex';
             backToInboxBtn.style.display = 'block';
             
             privateMessagesContainer.innerHTML = ''; 
             
-            // Cleanup previous listeners
             if (privateMessageListener) {
                 off(privateMessageListener);
             }
@@ -714,7 +674,7 @@
                 privateMessagesContainer.scrollTop = privateMessagesContainer.scrollHeight;
 
                 if (lastMessage && lastMessage.uid !== auth.currentUser?.uid && privateChatRoom.style.display === 'flex' && document.hidden) {
-                    const messageBody = lastMessage.text || (lastMessage.fileType?.startsWith('image/') ? '[Image]' : '[File]');
+                    const messageBody = lastMessage.text || '[New Message]'; // File reference removed
                     showNotification(`New Message from ${otherName}`, messageBody);
                 }
             });
@@ -748,19 +708,14 @@
         privateSendMessageBtn.addEventListener('click', async () => {
             const messageText = privateMessageInput.value.trim();
             if (currentChatID) {
-                if (messageText || privateFileUploadInput.files.length > 0) {
+                if (messageText) { // File check removed
                     const messagesRef = ref(db, `private_chats/${currentChatID}/messages`);
-                    if (privateFileUploadInput.files.length > 0) {
-                        // File upload logic handles sendChatMessage internally
-                        if(!messageText) privateMessageInput.value = '';
-                    } else {
-                        await sendChatMessage(messagesRef, messageText, null, null);
-                        privateMessageInput.value = '';
-                         // Manually clear typing status after sending private message
-                        await set(ref(db, `private_chats/${currentChatID}/typing/${auth.currentUser.uid}`), null);
-                    }
+                    await sendChatMessage(messagesRef, messageText);
+                    privateMessageInput.value = '';
+                    // Manually clear typing status after sending private message
+                    await set(ref(db, `private_chats/${currentChatID}/typing/${auth.currentUser.uid}`), null);
                 } else {
-                     alert("Please type a message or upload a file first.");
+                    alert("Please type a message first."); // Alert simplified
                 }
             } else {
                 alert("Please select a private chat room first.");
@@ -921,8 +876,6 @@
                     
                 if (potentialMatchUid) {
                     off(findMatch);
-                    // Ensure the current user is the one who initiates the chat creation (to prevent duplicates)
-                    // The user with the lexicographically smaller UID should create the chat
                     if (currentUser.uid < potentialMatchUid) {
                         createNewRandomChat(currentUser.uid, potentialMatchUid);
                     }
@@ -966,7 +919,6 @@
         const startCall = async (videoEnabled) => {
             if (!currentOtherUid) return alert("Error: No recipient found.");
             
-            // Check if user is anonymous
             if (auth.currentUser.isAnonymous) {
                 alert("Please sign in with a registered account to make calls.");
                 return;
@@ -1024,8 +976,7 @@
             onValue(ref(db, `calls/${currentOtherUid}`), (snapshot) => {
                 const data = snapshot.val();
                 if (data?.status === 'answered' && data?.answer) {
-                    off(ref(db, `calls/${currentOtherUid}`)); // Stop listening for status
-                    // Handled in setupCallListener's answer branch
+                    off(ref(db, `calls/${currentOtherUid}`)); 
                 } else if (data?.status === 'rejected') {
                     alert(`${chatPartnerNameEl.textContent} rejected your call.`);
                     endCall();
@@ -1123,7 +1074,6 @@
                 const callData = snapshot.val();
                 
                 if (!callData) {
-                    // If the call entry disappears, it means the caller ended the call
                     if (pc) {
                         alert("Call ended by the other party.");
                         endCall();
@@ -1144,7 +1094,6 @@
                     
                     document.getElementById('accept-call-btn').onclick = () => answerCall(callData);
                     document.getElementById('reject-call-btn').onclick = () => {
-                        // Notify the caller that the call was rejected
                         update(ref(db, `calls/${callData.callerUid}`), { status: 'rejected' });
                         endCall();
                     };
@@ -1169,7 +1118,6 @@
                         });
                     });
                     
-                    // Clear the answer data after processing
                     remove(ref(db, `calls/${uid}/answer`));
                 } else if (callData.status === 'rejected' && callData.callerUid === uid) {
                     // Call rejected (Caller)
@@ -1376,86 +1324,10 @@
 
 
         // ***************************************************************
-        // 10. MEDIA SHARING (UPLOAD/SEND)
+        // 10. MEDIA SHARING (UPLOAD/SEND) - REMOVED
         // ***************************************************************
+        // All file upload/storage logic has been removed from this version of the code.
 
-        const uploadFileAndSend = (file, messageText, messagesRef, inputElement, fileInputElement) => {
-            if (!file) {
-                alert("No file selected.");
-                return;
-            }
-            const currentUser = auth.currentUser;
-            if (!currentUser) {
-                alert("You must be logged in to upload files.");
-                return;
-            }
-
-            const fileName = `${Date.now()}_${file.name}`;
-            const fileType = file.type;
-            const storagePath = `chat_media/${currentUser.uid}/${fileName}`;
-            const uploadTask = uploadBytesResumable(storageRef(storage, storagePath), file);
-
-            uploadTask.on('state_changed', 
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    inputElement.placeholder = `Uploading: ${Math.round(progress)}%...`;
-                }, 
-                (error) => {
-                    console.error("Upload failed:", error);
-                    alert("File upload failed: " + error.message);
-                    inputElement.value = ''; 
-                    inputElement.placeholder = "Type a message...";
-                    fileInputElement.value = ''; // Clear file input
-                }, 
-                () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                        sendChatMessage(messagesRef, messageText, downloadURL, fileType)
-                            .then(() => {
-                                inputElement.value = ''; 
-                                inputElement.placeholder = "Type a message...";
-                                fileInputElement.value = ''; // Clear file input
-                                // Also clear typing indicator after successful send
-                                if (messagesRef.toString().includes('public_rooms')) {
-                                     set(ref(db, `public_rooms/global/typing/${currentUser.uid}`), null);
-                                } else if (currentChatID) {
-                                     set(ref(db, `private_chats/${currentChatID}/typing/${currentUser.uid}`), null);
-                                }
-                            });
-                    });
-                }
-            );
-        };
-
-        publicUploadFileBtn.addEventListener('click', () => {
-            publicFileUploadInput.click();
-        });
-
-        publicFileUploadInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const messageText = messageInput.value.trim() || prompt("Add a caption (optional):") || '';
-                uploadFileAndSend(file, messageText, messagesRef, messageInput, publicFileUploadInput); 
-            }
-        });
-
-        privateUploadFileBtn.addEventListener('click', () => {
-            if (!currentChatID) {
-                alert("Please select a private chat room first.");
-                return;
-            }
-            privateFileUploadInput.click();
-        });
-
-        privateFileUploadInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && currentChatID) {
-                const messagesRef = ref(db, `private_chats/${currentChatID}/messages`);
-                const messageText = privateMessageInput.value.trim() || prompt("Add a caption (optional):") || '';
-                uploadFileAndSend(file, messageText, messagesRef, privateMessageInput, privateFileUploadInput); 
-            } else if (file) {
-                alert("Please select a private chat room first.");
-            }
-        });
         
         // ***************************************************************
         // 9. ADMIN PANEL
@@ -1498,7 +1370,7 @@
                     msgItem.className = 'message-card'; 
                     msgItem.innerHTML = `
                         <p><strong>${message.displayName} (${message.uid.substring(0, 4)}...)</strong>:</p>
-                        <p>${message.text || (message.fileURL ? `[File: ${message.fileType}]` : '[Empty]')}</p>
+                        <p>${message.text || '[Empty Message]'}</p>
                         <button class="square-btn type-b" style="background:#dc3545; padding: 5px 10px;" 
                                 onclick="deletePublicMessage('${messageKey}')">❌ Delete Message</button>
                     `;
@@ -1529,7 +1401,6 @@
             if (confirm(`Are you sure you want to delete all data for UID: ${uid}? (This only removes DB data, actual Auth user must be deleted manually)`)) {
                 remove(ref(db, `users/${uid}`));
                 remove(ref(db, `user_friends/${uid}`));
-                // Note: Chat messages (private/public) and media remain until manually cleaned up
                 alert("User data removed from Realtime DB/Friends List. (Manual deletion in Firebase Auth is required).");
             }
         }
